@@ -67,7 +67,8 @@ app.UseAuthorization();
 
 app.UseSession();
 
-app.UseMiddleware<AuthSessionMiddleware>();
+//app.UseMiddleware<AuthSessionMiddleware>();
+app.UseAuthSession();
 
 
 app.MapControllerRoute(

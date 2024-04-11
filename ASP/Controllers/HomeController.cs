@@ -197,7 +197,8 @@ namespace ASP.Controllers
 
                     }
                     while (System.IO.File.Exists(pathName));
-                    model.UserAvatar.CopyTo(System.IO.File.OpenWrite(pathName));
+                    using var stream = System.IO.File.OpenWrite(pathName);
+                    model.UserAvatar.CopyTo(stream);
                     model.SavedAvataFilename = fileName;
                 }
                 

@@ -11,6 +11,14 @@ namespace ASP.Data.DAL
             _dataContext = dataContext;
             _kdfService = kdfService;
         }
+		public User? GetUserById(String id)
+		{
+			try
+			{
+				return _dataContext.Users.Find(Guid.Parse(id));
+			}
+			catch { return null; }
+		}
         public User? Authorize(String email, String password) 
 		{ 
 			var user = _dataContext.Users

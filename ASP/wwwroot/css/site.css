@@ -34,3 +34,8 @@ body {
 .spacer{
     flex:1;
 }
+.logo{
+    height: 50px;
+    width: 50px;
+    border-radius: 20%
+}
