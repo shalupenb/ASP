@@ -1,0 +1,71 @@
+﻿@* Прийом моделі представлення здійснюється за допомогою наступної інструкції *@
+@model ASP.Models.Home.Model.PageModel
+@{
+	// Прийом моделі представлення здійснюється за допомогою наступної інструкції
+	ViewData["Title"] = "Моделi";
+}
+
+<div class="text-center">
+	@* Доступ до моделі з ромітки - через символ @ *@
+	<h1 class="display-4">@Model.PageTitle</h1>
+</div>
+<p>
+	Моделі в ASP мають дещо відмінний зміст від класичного MVC.
+	Якщо в MVC Модель - це "постачальник даних", архітектурний
+	шар програми, що відповідає за обіг даними, то в ASP модель
+	це "засіб обігу", класи, що поєднують у собі набір даних,
+	потрібний для того чи іншого "споживача". Часто альтернативною
+	назвою таких об'єктів є DTO (Data Transfer Object) або структура.
+	Умовно розрізняють моделі форм, моделі представлень (сторінок)
+	та моделі даних (Entities)
+</p>
+<h2>Моделі представлень</h2>
+<p>
+	Моделі представлень (Page Model, View Model) - структура даних (клас),
+	яка містить усі необхідні дані для формування (заповнення) певної
+	сторінки (представлення, View). В ідеальному випадку, представлення
+	не містить нічого, окрім засобів розмітки/декорування даних з моделі
+	Снемає надписів, чисел, дат тощо - все береться з моделі)
+</p>
+<h2>Моделі форм</h2>
+<p>
+	Моделі форм використовуються для зворотних потоків даних - від
+	користувача до бекенду. Оскільки дані частіше за все надсилаються
+	за допомогою HTML-форм, моделі носять їх назву.
+</p>
+<p>
+	Доволі часто форма проходить валідацію і, якщо дані не коректні,
+	пропонується повторне заповнення форми. Але попередні дані
+	підставляються до неї Сокрім паролей). Відповідно, модель форм
+	також входить до моделі представлення.
+</p>
+<form method="post">
+	<div class="row">
+		<div class="col">
+			<div class="input-group mb-3">
+				<span class="input-group-text" id="user-name"><i class="bi bi-person-vcard"></i></span>
+				<input type="text" class="form-control" placeholder="Username"
+					   name="user-name"
+					   aria-label="Username" aria-describedby="user-name">
+			</div>
+		</div>
+		<div class="col">
+			<div class="input-group mb-3">
+				<span class="input-group-text" id="user-email"><i class="bi bi-envelope-at"></i></span>
+				<input type="text" class="form-control" placeholder="Email"
+					   name="user-email"
+					   aria-label="Email" aria-describedby="user-email">
+			</div>
+		</div>
+		<div class="col">
+			<button type="submit" class="btn btn-secondary">Реєстрація</button>
+		</div>
+	</div>
+</form>
+@if(Model.FormModel?.UserName != null)
+{
+	<p>
+		Name : @Model.FormModel.UserName <br/>
+		Email : @Model.FormModel.UserEmail
+	</p>
+}

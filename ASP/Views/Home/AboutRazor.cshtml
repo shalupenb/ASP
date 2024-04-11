@@ -1,0 +1,110 @@
+﻿@{
+	ViewData["Title"] = "Razor";
+}
+<div class="text-center">
+	<h1 class="display-4">Синтаксис Razor</h1>
+</div>
+<p>
+	<strong>Razor</strong> - технологія включення до складу HTML розмітки
+	засобів мови програмування C#.
+</p>
+<h2>Вирази</h2>
+<p>
+	Вирази Су програмуванні) - інструкції, які мають результат.
+	Коли йдеться про Razor мається на увазі виведення цього результату.
+	&commat;(2+3) = @(2 + 3) <br />
+	Для деяких випадків круглі дужки не обов'язкові (як правило для
+	виведення змінних), але можливі неправильні визначення меж виразів,
+	тому дужки лишати бажано.
+</p>
+<h2>Інструкції</h2>
+<p>
+	Інструкції - узагальнені засоби мови програмування, які можуть бути
+	як виразами (результати яких не потрібно виводити),
+	так і безрезультатними літералами.
+	Razor-iнструкції вміщують у фігурні дужки &commat;{...}
+	В середині дужок можуть бути довільні інструкції мовою С#.
+	Рекомендується вживати лише ті інструкції, які обробляють передані
+	до представлення дані і не використовують сервіси та інші засоби
+	проєкту.
+</p>
+@{
+	String str = "Hello, World!";
+	String[] arr = { "line 1", "line 2", "line 3" };
+
+	var times = 3;
+	var otpValues = new string[times];
+	var filenameValues = new string[times];
+	var saltValues = new string[times];
+
+	for (int i = 0; i < times; i++)
+	{
+		otpValues[i] = RandomStringService.GenerateOTP(6);
+		filenameValues[i] = RandomStringService.GenerateFilename(10);
+		saltValues[i] = RandomStringService.GenerateSalt(8);
+	}
+}
+<p>
+	Змінні, оголошені в інструкціях можна вивести синтаксисом виразів
+	&commat;str = @str <br />
+	&commat;str+"!" = @str+"!" <br />
+	&commat;(str+"!") = @(str + "!")
+</p>
+<h2>Операцiї</h2>
+<p>
+	Razor містить власні конструкції для ряду операцій мови С#:
+	<code>&commat;if(){...}</code>,
+	<code>&commat;for(){...}</code>,
+	<code>&commat;foreach (){...}</code> ...
+</p>
+@if (str.Length > 10)
+{
+	int len = str.Length;
+	<p>Довжина рядка більша за 10 (@len)</p>
+}
+else
+{
+	<p>Довжина рядка НЕ більша за 10 (@str.Length)</p>
+}
+<table class="table table-striped">
+	<tbody>
+		@for (int i = 0; i < arr.Length-1; i++)
+		{
+			<tr>
+				<td>@(i + 1)</td>
+				<td>@arr[i]</td>
+			</tr>
+		}
+	</tbody>
+</table>
+<table class="table table-striped">
+	<tr>
+		@for (int i = 0; i < arr.Length; i++)
+		{
+			<td>@(i + 1)</td>
+		}
+	</tr>
+	<tr>
+		@foreach (var item in arr)
+		{
+			<td>@item</td>
+		}
+	</tr>
+</table>
+<table class="table table-striped">
+	<tr>
+		<th>№</th>
+		<th>OTP</th>
+		<th>Filename</th>
+		<th>Salt</th>
+	</tr>
+	@for (int i = 0; i < times; i++)
+	{
+		<tr>
+			<td>@(i + 1)</td>
+			<td>@otpValues[i]</td>
+			<td>@filenameValues[i]</td>
+			<td>@saltValues[i]</td>
+		</tr>
+	}
+</table>

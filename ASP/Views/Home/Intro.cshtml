@@ -1,0 +1,75 @@
+﻿@{
+	ViewData["Title"] = "Вступ";
+}
+
+<div class="text-center">
+	<h1 class="display-4">Вступ до ASP</h1>
+</div>
+<img class="float-start intro-img" src="/img/asp.net.png" alt="img" />
+<p>
+	ASP - фреймворк .NET для створення веб-застосунків
+	різного типу. Найбільш сучасна модифікація - ASP .NET Core MVC
+</p>
+<p>
+	На початку слід звернути увагу на те, що багато речей
+	виконуються через збіг імені. Тому слід уважно стежити за
+	назвами класів, методів, файлів, змінних тощо.
+</p>
+<p>
+	Використовується принцип шаблонізації (Layout), тобто всі
+	сторінки формально є складовими частинами більш загального
+	файлу <code>_Layout.cshtml</code>
+</p>
+<h2>
+	Щодо вiдносних форм URL
+</h2>
+<p>
+	Нехай сторінка знаходиться за адресою
+	<code>https://localhost:5567/Home/Url</code>,
+	тоді якщо у HTML-коді даної сторінки є відносні посилання, то
+	їх повна адреса буде
+</p>
+<ul>
+	<li>
+		src="image.png" &rarr;
+		<code>https://localhost:5567/Home/image.png</code>
+		(посилання "image.png" додається після <u>останнього</u> слешу)
+	</li>
+	<li>
+		src="/image.png" &rarr;
+		<code>https://localhost:5567/image.png</code>
+		(посилання "image.png" додається після доменного імені - після
+		першого одинарного слешу) !! при роботі з файлами HTML посилання
+		буде формуватися від кореня диску (file://C:/image.png)
+	</li>
+	<li>
+		src="//image.png" &rarr;
+		<code>https://image.png</code>
+		(посилання "image.png" додається після протоколу (схеми) - після
+		подвійного слешу). Такі форми вживають для збереження протоколу
+	</li>
+	<li>
+		src="?image.png" &rarr;
+		<code>https://localhost:5567/Home/Url?image.png</code>
+		(посилання "image.png" додається після всієї адреси). Вживається
+		для доповнення посилання параметрами (імітація форми).
+	</li>
+	<li>
+		src="#image.png" &rarr;
+		<code>https://localhost:5567/Home/Url#image.png</code>
+		(посилання "image.png" додається після всієї адреси). Вживається
+		для внутрішніх переходів - сторінка не перевантажується, а
+		прокручується
+	</li>
+	<li>
+		<strong>Тiльки для ASP</strong> src=l~/image.png" &rarr;
+		<code>https://localhost:5567/image.png</code>
+		(посилання "image png" додається до контекстного шляху,
+		якщо він є). Вживається коли на одному сервері існує декілька
+		сайтів і вони розділяються контекстним шляхом:
+		https://site.com/site1/Home/Url
+		https://site.com/site2/Home/Url
+		<tt>у таких формах посилання буде</tt>
+		<code>https: //localhost: 5567/site1/image.png</code>
+	</li>
+</ul>
