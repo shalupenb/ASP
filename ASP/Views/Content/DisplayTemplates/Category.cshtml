@@ -1,0 +1,13 @@
+﻿@model ASP.Data.Entities.Category
+
+<div class="col">
+	<a asp-action="Category" asp-route-id="@(Model.Id)">
+		<div class="card h-100" style="width: 18rem;">
+			<img src="img/content/@(Model.PhotoUrl ?? "no-image.jpg")" height="200px" width="auto" class="card-img-top" alt="image">
+			<div class="card-body">
+				<h5 class="card-title">@Model.Name</h5>
+				<p class="card-text">@Model.Description</p>
+			</div>
+		</div>
+	</a>
+</div>

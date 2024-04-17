@@ -56,6 +56,10 @@ namespace ASP.Controllers
         {
             return View();
         }
+        public ViewResult Admin()
+        {
+            return View();
+        }
         // Модель форми зазначається параметром методу, заповнення-автоматичне
         public IActionResult Model(Models.Home.Model.FormModel? formModel)
         {

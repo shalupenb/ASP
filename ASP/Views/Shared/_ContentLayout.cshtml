@@ -29,7 +29,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" title="Домашняя страница"
-                            asp-controller="Home" asp-action="Index"><i class="bi bi-house-door"></i></a>
+                               asp-controller="Home" asp-action="Index"><i class="bi bi-house-door"></i></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" title="Вступ"
@@ -68,7 +68,7 @@
                                asp-controller="Content" asp-action="Index"><i class="bi bi-house-heart-fill"></i></a>
                         </li>
                     </ul>
-                    @if(isAuthenticated)
+                    @if (isAuthenticated)
                     {
                         <img class="logo" src="/img/avatars/@(avatar == "" ? "no-avatar.png" : avatar)" alt="avatar" />
                         <a class="nav-link text-dark" asp-area="" title="Выйти" asp-controller="Home" asp-action="Index" asp-route-logout="true">
@@ -90,6 +90,10 @@
             </div>
         </nav>
     </header>
+    <div class="sub-header">
+        <h2>Ваш найкращий вибір</h2>
+        <h3>Це ми</h3>
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -103,27 +107,27 @@
         <div class="container">
             &copy; 2024 - ASP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-        
+
 
     </footer>
 
-    
+
     <!-- Modal -->
     <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-content">
+                <div class="modal-header">
                     <h5 class="modal-title" id="authModalLabel">Вход на сайт</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
 
                     <div class="row">
                         <div class="col">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="auth-email-icon"><i class="bi bi-envelope-at"></i></span>
                                 <input type="text" class="form-control "
-                                       placeholder="Email"  
+                                       placeholder="Email"
                                        id="auth-email"
                                        aria-label="Email" aria-describedby="auth-email">
                                 <div class="invalid-feedback">Почта не может быть пустой</div>
@@ -134,27 +138,27 @@
                         <div class="col">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="auth-password-icon"><i class="bi bi-lock"></i></span>
-                                <input type="password" 
-                                    class="form-control" 
-                                    placeholder="Password"
+                                <input type="password"
+                                       class="form-control"
+                                       placeholder="Password"
                                        id="auth-password"
                                        aria-label="Password" aria-describedby="auth-password">
                             </div>
                         </div>
-                        </div>
-                    
+                    </div>
 
-        </div>
-        <div class="modal-footer">
-            <div class="alert alert-warning visually-hidden" role="alert" id="auth-message">
-                Вход прерван , проверьте введенные данные
-            </div>
-            <div class="spacer"></div>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="alert alert-warning visually-hidden" role="alert" id="auth-message">
+                        Вход прерван , проверьте введенные данные
+                    </div>
+                    <div class="spacer"></div>
                     <button type="button" class="btn btn-primary" id="auth-button">Вход</button>
+                </div>
+            </div>
         </div>
-        </div>
-        </div>
-        </div>
+    </div>
 
 
 
@@ -172,3 +176,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

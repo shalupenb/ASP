@@ -6,18 +6,25 @@ namespace ASP.Data.DAL
 	{
 		private readonly DataContext _dataContext;
 		private readonly IKdfService _kdfService;
-        public UserDao(DataContext dataContext, IKdfService kdfService)
-        {
-            _dataContext = dataContext;
-            _kdfService = kdfService;
-        }
+		private readonly Object _dbLocker;
+		public UserDao(DataContext dataContext, IKdfService kdfService, object dbLocker)
+		{
+			_dataContext = dataContext;
+			_kdfService = kdfService;
+			_dbLocker = dbLocker;
+		}
 		public User? GetUserById(String id)
 		{
+			User? user;
 			try
 			{
-				return _dataContext.Users.Find(Guid.Parse(id));
+				lock (_dbLocker) 
+				{ 
+					user = _dataContext.Users.Find(Guid.Parse(id));
+				}
 			}
 			catch { return null; }
+			return user;
 		}
         public User? Authorize(String email, String password) 
 		{ 

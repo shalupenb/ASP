@@ -16,7 +16,13 @@ namespace ASP.Middleware
         public async Task InvokeAsync(HttpContext context, DataAccessor dataAccessor)
         {
             // Call the next delegate/middleware in the pipeline.
-            if(context.Session.GetString("auth-user-id") is String userId)
+            if (context.Request.Query.ContainsKey("logout"))
+            {
+                context.Session.Remove("auth-user-id");
+                context.Response.Redirect("/");
+                return;
+            }
+            else if(context.Session.GetString("auth-user-id") is String userId)
             {
                 var user = dataAccessor.UserDao.GetUserById(userId);
                 if(user != null)
