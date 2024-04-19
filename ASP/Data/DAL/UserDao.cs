@@ -13,13 +13,15 @@ namespace ASP.Data.DAL
 			_kdfService = kdfService;
 			_dbLocker = dbLocker;
 		}
+
+
 		public User? GetUserById(String id)
 		{
 			User? user;
 			try
 			{
-				lock (_dbLocker) 
-				{ 
+				lock (_dbLocker)
+				{
 					user = _dataContext.Users.Find(Guid.Parse(id));
 				}
 			}

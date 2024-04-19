@@ -1,8 +1,8 @@
 ﻿using ASP.Data.DAL;
 using ASP.Data.Entities;
-using ASP.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ASP.Controllers
 {
@@ -15,26 +15,27 @@ namespace ASP.Controllers
         {
             _dataAccessor = dataAccessor;
         }
+
         [HttpGet]
         public List<Category> DoGet()
         {
             return _dataAccessor.ContentDao.GetCategories();
         }
-        [HttpPost]
+		[HttpPost]
         public String DoPost([FromForm] CategoryPostModel model)
-        {
-            try
-            {
+		{
+			try
+			{
 				String? fileName = null;
 				if (model.Photo != null)
 				{
+
 					String ext = Path.GetExtension(model.Photo.FileName);
 					String path = Directory.GetCurrentDirectory() + "/wwwroot/img/content/";
 					String pathName;
-					string randomFileName = RandomStringService.GenerateFilename(10);
 					do
 					{
-						fileName = randomFileName + ext;
+						fileName = Guid.NewGuid() + ext;
 						pathName = path + fileName;
 
 					}
@@ -48,15 +49,15 @@ namespace ASP.Controllers
             }
             catch (Exception ex)
             {
-                Response.StatusCode = StatusCodes.Status400BadRequest;
-                return "Error";
-            }
+				Response.StatusCode = StatusCodes.Status400BadRequest;
+				return "Error";
+			}
         }
-    }
+	}
     public class CategoryPostModel
     {
         public String Name { get; set; }
-        public string Description { get; set; }
+		public String Description { get; set; }
         public IFormFile? Photo { get; set; }
-    }
+	}
 }

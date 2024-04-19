@@ -60,25 +60,29 @@
                                asp-controller="Home" asp-action="Model"><i class="bi bi-clipboard-data"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" title="Адміністрування контенту"
-                               asp-controller="Home" asp-action="Admin"><i class="bi bi-pencil-square"></i></a>
+                            <a class="nav-link text-dark" asp-area="" title="Мoделі в ASP"
+                               asp-controller="Home" asp-action="Model"><i class="bi bi-clipboard-data"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" title="Контент"
-                               asp-controller="Content" asp-action="Index"><i class="bi bi-house-heart-fill"></i></a>
+                            <a class="nav-link text-dark" asp-area="" title="Content"
+                               asp-controller="Content" asp-action="Index">
+                                <i class="bi bi-house-heart-fill"></i>
+                            </a>
                         </li>
                     </ul>
-                    @if(isAuthenticated)
+
+                    @if (isAuthenticated)
                     {
                         <img class="logo" src="/img/avatars/@(avatar == "" ? "no-avatar.png" : avatar)" alt="avatar" />
-                        <a class="nav-link text-dark" asp-area="" title="Выйти" asp-controller="Home" asp-action="Index" asp-route-logout="true">
+                        <a class="nav-link text-dark" asp-area="" title="Выход"
+                           asp-controller="Home" asp-action="Index" asp-route-logout="true">
                             <i class="bi bi-box-arrow-right"></i>
                         </a>
                     }
                     else
                     {
                         <a class="nav-link text-dark" asp-area="" title="Регистрация"
-                           asp-controller="Home" asp-action="Signup">
+                        asp-controller="Home" asp-action="Signup">
                             <i class="bi bi-person-plus"></i>
                         </a>
 
@@ -101,6 +105,10 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
+            @if (Context.User.Identity?.IsAuthenticated ?? false)
+            {
+                <b>Вы вошли в систему</b>
+            }
             &copy; 2024 - ASP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
         

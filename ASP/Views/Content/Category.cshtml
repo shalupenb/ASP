@@ -1,5 +1,9 @@
-﻿@model ASP.Data.Entities.Category
+﻿@model ASP.Models.Content.Category.ContentCategoryPageModel
 @{
-    Layout = "_ContentLayout";
+	Layout = "_ContentLayout";
 }
-<h1>Category</h1>
+<h1>@Model.Category.Name</h1>
+@foreach(var location in Model.locations)
+{
+	@Html.DisplayFor(m => location, "LocationTemplate")
+}

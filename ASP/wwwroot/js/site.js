@@ -1,4 +1,24 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('submit', e => {
+    console.log(e)
+    const form = e.target;
+    if (form.id == 'room-form') {
+        e.preventDefault();
+        let formData = new FormData(form);
+        fetch("/api/room", {
+            method: 'POST',
+            body: formData
+        }).then(r => {
+            console.log(r);
+            if (r.status == 201) {
+                window.location.reload();
+            }
+            else {
+                r.text.then(alert);
+            }
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', function () {
     const authButton = document.getElementById("auth-button");
     if (authButton) authButton.addEventListener('click', authButtonClick);
 
@@ -11,33 +31,36 @@ function authButtonClick() {
     if (!authPassword) throw "Element '#auth-password' not found";
     const authMessage = document.getElementById("auth-message");
     if (!authMessage) throw "Element '#auth-message' not found";
+
     const email = authEmail.value?.trim();
     if (!email) {
         authMessage.classList.remove('visually-hidden');
-        authMessage.innerText = "Нужно ввести email";
+        authMessage.innerText = "Необхідно ввести E-mail";
         return;
     }
     const password = authPassword.value;
+
     fetch(`/api/auth?e-mail=${email}&password=${password}`)
         .then(r => {
             if (r.status != 200) {
                 authMessage.classList.remove('visually-hidden');
-                authMessage.innerText = "Вход прервано, проверьте данные";
+                authMessage.innerText = "Вхід скасовано, перевірте введені дані";
             }
             else {
+                // За вимогами безпеки зміна статусу авторизації потребує перезавантаження
                 window.location.reload();
             }
         });
 }
 
-/////////////////// ADMIN PAGE ////////////////
+//////// ADMIN PAGE ////////////
 function initAdminPage() {
     loadCategories();
 }
 function loadCategories() {
     const container = document.getElementById("category-container");
     if (!container) return;
-    fetch("/api/category")
+    fetch("/api/category")  // запитуємо наявні категорії
         .then(r => r.json())
         .then(j => {
             let html = "";
@@ -52,12 +75,13 @@ function loadCategories() {
         });
 }
 function ctgClick(ctgId) {
-    fetch("/api/location?categoryId=" + ctgId).then(r => r.json())
+    fetch("/api/location?categoryId=" + ctgId)
+        .then(r => r.json())
         .then(j => {
             const container = document.getElementById("location-container");
             let html = "";
             for (let loc of j) {
-                html += `<p data-id="${loc["id"]}" onclick="locClick('${loc["id"]}')">${loc["name"]}</p>`;
+                html += `<p data-id="${loc["id"]}" onclick="locClick(event)">${loc["name"]}</p>`;
             }
             html += `Назва: <input id="loc-name" /><br/>
             Опис: <textarea  id="loc-description"></textarea><br/>
@@ -66,30 +90,6 @@ function ctgClick(ctgId) {
             <button onclick='addLocation("${ctgId}")'>+</button>`;
             container.innerHTML = html;
         });
-}
-function addCategory() {
-    const ctgName = document.getElementById("ctg-name").value;
-    const ctgDescription = document.getElementById("ctg-description").value;
-    const ctgPhoto = document.getElementById("ctg-photo");
-    if (confirm(`Додаємо категорію ${ctgName} ${ctgDescription} ?`)) {
-        let formData = new FormData();
-        formData.append("name", ctgName);
-        formData.append("description", ctgDescription);
-        formData.append("photo", ctgPhoto.files[0]);
-        fetch("/api/category", {
-            method: 'POST',
-            body: formData
-        })
-        .then(r => {
-            console.log(r);
-            if (r.status == 201) {
-                loadCategories();
-            }
-            else {
-                alert("error")
-            }
-        });
-    }
 }
 function addLocation(ctgId) {
     const ctgName = document.getElementById("loc-name").value;
@@ -107,14 +107,38 @@ function addLocation(ctgId) {
             method: 'POST',
             body: formData
         })
-        .then(r => {
-            console.log(r);
-            if (r.status == 201) {
-                ctgClick(ctgId);
-            }
-            else {
-                alert("error")
-            }
-        });
+            .then(r => {
+                console.log(r);
+                if (r.status == 201) {
+                    ctgClick(ctgId);
+                }
+                else {
+                    alert("error")
+                }
+            });
+    }
+}
+function addCategory() {
+    const ctgName = document.getElementById("ctg-name").value;
+    const ctgDescription = document.getElementById("ctg-description").value;
+    const ctgPhoto = document.getElementById("ctg-photo");
+    if (confirm(`Додаємо категорію ${ctgName} ${ctgDescription} ?`)) {
+        let formData = new FormData();
+        formData.append("name", ctgName);
+        formData.append("description", ctgDescription);
+        formData.append("photo", ctgPhoto.files[0]);
+        fetch("/api/category", {
+            method: 'POST',
+            body: formData
+        })
+            .then(r => {
+                console.log(r);
+                if (r.status == 201) {
+                    loadCategories();
+                }
+                else {
+                    alert("error")
+                }
+            });
     }
 }

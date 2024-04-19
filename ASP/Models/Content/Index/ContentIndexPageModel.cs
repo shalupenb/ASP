@@ -2,8 +2,8 @@
 
 namespace ASP.Models.Content.Index
 {
-	public class ContentIndexPageModel
-	{
-		public List<Category> Categories { get; set; } = [];
-	}
+    public class ContentIndexPageModel
+    {
+        public List<Data.Entities.Category> Categories { get; set; } = new();
+     }
 }

@@ -15,26 +15,27 @@ namespace ASP.Controllers
 		{
 			_dataAccessor = dataAccessor;
 		}
-		[HttpGet]
-		public List<Location> DoGet(Guid? categoryId)
+		[HttpGet("{id}")]
+		public List<Location> DoGet(String id)
 		{
-			return _dataAccessor.ContentDao.GetLocations(categoryId);
+			return _dataAccessor.ContentDao.GetLocation(id);
 		}
 		[HttpPost]
 		public String DoPost([FromForm] LocationPostModel model)
 		{
+
 			try
 			{
-				String? fileName = null;
+				String? fileName;
 				if (model.Photo != null)
 				{
+
 					String ext = Path.GetExtension(model.Photo.FileName);
 					String path = Directory.GetCurrentDirectory() + "/wwwroot/img/content/";
 					String pathName;
-					string randomFileName = RandomStringService.GenerateFilename(10);
 					do
 					{
-						fileName = randomFileName + ext;
+						fileName = Guid.NewGuid() + ext;
 						pathName = path + fileName;
 
 					}
@@ -46,8 +47,7 @@ namespace ASP.Controllers
 					name: model.Name,
 					description: model.Description,
 					CategoryId: model.CategoryId,
-					Stars: model.Stars,
-					PhotoUrl: fileName);
+					Stars: model.Stars);
 				Response.StatusCode = StatusCodes.Status201Created;
 				return "Ok";
 			}

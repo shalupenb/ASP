@@ -6,11 +6,14 @@ using ASP.Models.Home.Ioc;
 using ASP.Models.Home.Signup;
 using ASP.Services.Hash;
 using ASP.Services.Kdf;
+using ASP.Services.Random;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 
 namespace ASP.Controllers
 {
@@ -56,6 +59,8 @@ namespace ASP.Controllers
         {
             return View();
         }
+
+
         public ViewResult Admin()
         {
             return View();
@@ -124,8 +129,8 @@ namespace ASP.Controllers
             };
             if (formModel?.HasData ?? false)
             {
-                pageModel.ValidationsErrors = _ValidateSignupModel(formModel);
-                if(pageModel.ValidationsErrors.Count == 0)
+                pageModel.ValidationsErrors = ValidateSignupModel(formModel);
+                if(pageModel.ValidationsErrors.Count ==0)
                 {
                     String salt = RandomStringService.GenerateSalt(8);
                     _dataAccessor.UserDao.Signup(new()
@@ -155,7 +160,7 @@ namespace ASP.Controllers
         }
 
 
-        private Dictionary<string, string> _ValidateSignupModel(SignupFormModel? model)
+        private Dictionary<string, string> ValidateSignupModel(SignupFormModel? model)
         {
             Dictionary<string, string> result = new();
             if (model == null)
@@ -180,34 +185,81 @@ namespace ASP.Controllers
                 {
                     result[nameof(model.UserAvatar)] = "UserAvatar cannot be empty";
                 }
-                if (model.UserAvatar != null)
+                else
                 {
                     int dotPosition = model.UserAvatar.FileName.LastIndexOf('.');
                     if (dotPosition == -1)
                     {
                         result[nameof(model.UserAvatar)] = "File without extension not allowed";
                     }
-                    String ext = model.UserAvatar.FileName[dotPosition..];
-                    // _logger.LogInformation(ext);
-                    String path = Directory.GetCurrentDirectory() + "/wwwroot/img/Avatars/";
-                    _logger.LogInformation(path);
-                    String fileName;
-                    String pathName;
-                    string randomFileName = RandomStringService.GenerateFilename(10);
-					do
-					{
-                        fileName = randomFileName + ext;
-                        pathName = path + fileName;
+                    else
+                    {
+                        string ext = model.UserAvatar.FileName[dotPosition..].ToLower();
+                        string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".svg", ".bmp", ".gif", ".webp" };
+                        if (!allowedExtensions.Contains(ext))
+                        {
+                            result[nameof(model.UserAvatar)] = "Invalid file extension";
+                        }
+                        else
+                        {
+                            string path = Directory.GetCurrentDirectory() + "/wwwroot/img/Avatars/";
+                            string fileName;
+                            string pathName;
+                            string randomFileName = RandomStringService.GenerateFilename(10);
+                            do
+                            {
+                                fileName = randomFileName + ext;
+                                pathName = path + fileName;
 
+                            } while (System.IO.File.Exists(pathName));
+                            using var stream = System.IO.File.OpenWrite(pathName);
+                            model.UserAvatar.CopyTo(stream);
+                            model.SavedAvataFilename = fileName;
+                        }
                     }
-                    while (System.IO.File.Exists(pathName));
-                    using var stream = System.IO.File.OpenWrite(pathName);
-                    model.UserAvatar.CopyTo(stream);
-                    model.SavedAvataFilename = fileName;
                 }
-                
+
+                if (String.IsNullOrEmpty(model.Password))
+                {
+                    result[nameof(model.Password)] = "Password cannot be empty";
+                }
+                else
+                {
+                    if (model.Password.Length < 8)
+                    {
+                        result[nameof(model.Password)] = "Password must be at least 8 characters long";
+                    }
+                    else if (!Regex.IsMatch(model.Password, @"[a-zA-Z]"))
+                    {
+                        result[nameof(model.Password)] = "Password must contain at least one letter";
+                    }
+                    else if (!Regex.IsMatch(model.Password, @"\d"))
+                    {
+                        result[nameof(model.Password)] = "Password must contain at least one digit";
+                    }
+                }
+
+                if (String.IsNullOrEmpty(model.Repeat))
+                {
+                    result[nameof(model.Repeat)] = "Confirm Password cannot be empty";
+                }
+                else
+                {
+                    if (model.Password != model.Repeat)
+                    {
+                        result[nameof(model.Repeat)] = "Passwords do not match";
+                    }
+                }
+
+                if (!model.agreement)
+                {
+                    result[nameof(model.agreement)] = "You must accept the terms and conditions";
+                }
             }
-			return result;
-		}
+            return result;
+        }
+
+
+
     }
 }

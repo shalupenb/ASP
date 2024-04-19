@@ -1,124 +1,135 @@
 ﻿@model ASP.Models.Home.Signup.SignupPageModel
 @{
-	ViewData["Title"] = "Регистрация";
-	bool isFormInvalid = Model.FormModel?.HasData == true && Model.ValidationsErrors?.Count > 0;
-	bool isSignupSuccess = Model.FormModel?.HasData == true && Model.ValidationsErrors?.Count == 0;
-	Dictionary<string, string> classes = new();
-	foreach (string key in new string[] { "UserName", "UserEmail", "UserBirthdate", "UserAvatar" })
-	{
-		classes[key] = isFormInvalid ?
-		(Model.ValidationsErrors?.ContainsKey(key)
-		?? false ? "is-invalid" : "is-valid") : "";
-		
-	}
-	// String nameClass = isFormInvalid ? (Model.ValidationsErrors?.ContainsKey("UserName") ?? false ? "is-invalid" : "is-valid") : "";
-	// String emailClass = isFormInvalid ? (Model.ValidationsErrors?.ContainsKey("UserEmail") ?? false ? "is-invalid" : "is-valid") : "";
-	// String DateClass = isFormInvalid ? (Model.ValidationsErrors?.ContainsKey("UserBirthdate") ?? false ? "is-invalid" : "is-valid") : "";
-
+    ViewData["Title"] = "Регистрация";
+    bool isFormInvalid = Model.FormModel?.HasData == true && Model.ValidationsErrors?.Count > 0;
+    bool isSignupSuccess = Model.FormModel?.HasData == true && Model.ValidationsErrors?.Count == 0;
+    Dictionary<string, string> classes = new();
+    foreach (string key in new string[] { "UserName", "UserEmail", "UserBirthdate", "UserAvatar", "agreement", "Password", "Repeat" })
+    {
+        classes[key] = isFormInvalid ?
+            (Model.ValidationsErrors?.ContainsKey(key) ?? false ? "is-invalid" : "is-valid") : "";
+    }
 }
+
 <div class="text-center">
     <h1 class="display-4">Регистрация нового пользователя</h1>
 </div>
 
 @if (isFormInvalid)
 {
-	<div class="alert alert-danger" role="alert">  
-		Проблемы с проверкой
-	</div>
+    <div class="alert alert-danger" role="alert">
+        Проблемы с проверкой
+    </div>
 }
 @if (isSignupSuccess)
 {
-	<div class="alert alert-success" role="alert">
-		Вы успешно зарегестрировались!
-	</div>
+    <div class="alert alert-success" role="alert">
+        Вы успешно зарегестрировались!
+    </div>
 }
 
-
 <form method="post" enctype="multipart/form-data">
-	<div class="row">
-		<div class="col">
-			<div class="input-group mb-3">
-				<span class="input-group-text" id="user-name"><i class="bi bi-person-vcard"></i></span>
-				<input type="text"
-					   class="form-control @classes["UserName"]"
-				placeholder="Username"
-					   name="user-name"
-					   value="@(isFormInvalid ? Model.FormModel!.UserName : "")"
-					   aria-label="Username" aria-describedby="user-name">
-					   <div class="invalid-feedback">Имя не может быть пустым</div>
-			</div>
-		</div>
-		<div class="col">
-			<div class="input-group mb-3">
-				<span class="input-group-text" id="user-email"><i class="bi bi-envelope-at"></i></span>
-				<input type="text" class="form-control  @classes["UserEmail"]" placeholder="Email"
-					   name="user-email"
-					   value="@(isFormInvalid ? Model.FormModel!.UserEmail : "")"
-					   aria-label="Email" aria-describedby="user-email">
-				<div class="invalid-feedback">Почта не может быть пустой</div>
-			</div>
-		</div>
-	</div>
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="user-name"><i class="bi bi-person-vcard"></i></span>
+                <input type="text"
+                       class="form-control @classes["UserName"]"
+                       placeholder="Username"
+                       name="user-name"
+                       value="@(isFormInvalid ? Model.FormModel!.UserName : "")"
+                       aria-label="Username" aria-describedby="user-name">
+                @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("UserName") == true)
+                {
+                    <div class="invalid-feedback">@Model.ValidationsErrors["UserName"]</div>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="user-email"><i class="bi bi-envelope-at"></i></span>
+                <input type="text" class="form-control  @classes["UserEmail"]" placeholder="Email"
+                       name="user-email"
+                       value="@(isFormInvalid ? Model.FormModel!.UserEmail : "")"
+                       aria-label="Email" aria-describedby="user-email">
+                @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("UserEmail") == true)
+                {
+                    <div class="invalid-feedback">@Model.ValidationsErrors["UserEmail"]</div>
+                }
+            </div>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="user-password"><i class="bi bi-lock"></i></span>
+                <input type="password" class="form-control @classes["Password"]" placeholder="Password"
+                       name="user-password"
+                       aria-label="user-password" aria-describedby="user-password">
+                @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("Password") == true)
+                {
+                    <div class="invalid-feedback">@Model.ValidationsErrors["Password"]</div>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="user-repeat">
+                    <i class="bi bi-unlock"></i>
+                </span>
+                <input type="password" class="form-control @classes["Repeat"]" placeholder="Repeat password"
+                       name="user-repeat"
+                       aria-label="Repeat" aria-describedby="user-repeat">
+                @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("Repeat") == true)
+                {
+                    <div class="invalid-feedback">@Model.ValidationsErrors["Repeat"]</div>
+                }
+            </div>
+        </div>
+    </div>
 
-	<div class="row">
-		<div class="col">
-			<div class="input-group mb-3">
-				<span class="input-group-text" id="user-password"><i class="bi bi-lock"></i></span>
-				<input type="password" class="form-control" placeholder="Password"
-					   name="user-password"
-					   aria-label="user-password" aria-describedby="user-password">
-			</div>
-		</div>
-		<div class="col">
-			<div class="input-group mb-3">
-				<span class="input-group-text" id="user-repeat">
-					<i class="bi bi-unlock"></i>
-				</span>
-				<input type="password" class="form-control" placeholder="Repeat password"
-					   name="user-repeat"
-					   aria-label="Repeat" aria-describedby="user-repeat">
-			</div>
-		</div>
-		</div>
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="user-birthdate"><i class="bi bi-cake2"></i></span>
+                <input type="date"
+                       class="form-control @classes["UserBirthdate"]"
+                       name="user-birthdate"
+                       value="@(isFormInvalid ? Model.FormModel!.UserBirthdate.ToString("yyyy-MM-dd") : "")"
+                       aria-label="user-birthdate "
+                       aria-describedby="user-birthdate ">
+                @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("UserBirthdate") == true)
+                {
+                    <div class="invalid-feedback">@Model.ValidationsErrors["UserBirthdate"]</div>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="user-avatar"><i class="bi bi-person-circle"></i></label>
+                <input type="file" class="form-control @classes["UserAvatar"]" name="user-avatar" id="user-avatar">
+                @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("UserAvatar") == true)
+                {
+                    <div class="invalid-feedback">@Model.ValidationsErrors["UserAvatar"]</div>
+                }
+            </div>
+        </div>
+    </div>
 
-
-		<div class="row">
-			<div class="col">
-				<div class="input-group mb-3">
-					<span class="input-group-text" id="user-birthdate"><i class="bi bi-cake2"></i></span>
-				<input type="date" 
-					class="form-control @classes["UserBirthdate"]"
-						   name="user-birthdate"
-						   value="@(isFormInvalid ? Model.FormModel!.UserBirthdate.ToString("yyyy-MM-dd") : "")"
-					   aria-label="user-birthdate "
-					   aria-describedby="user-birthdate ">
-				<div class="invalid-feedback">Дата не может быть пустой</div>
-				</div>
-			</div>
-			<div class="col">
-				<div class="input-group mb-3">
-					<label class="input-group-text" for="user-avatar"><i class="bi bi-person-circle"></i></label>
-				<input type="file" class="form-control @classes["UserAvatar"]" name="user-avatar" id="user-avatar">
-				<div class="invalid-feedback">Аватар не может быть пустой</div>
-				</div>
-			</div>
-		</div>
-
-
-
-		<div class="row">
-			<div class="col">
-				<div class="form-check">
-				<input class="form-check-input" type="checkbox" value="true" name="user-agreement" id="agreement">
-
-					<label class="form-check-label" for="agreement">    Согласен с правилами сайта  </label></div>
-
-			</div>
-			<div class="col">
-				<button type="submit" class="btn btn-secondary" name="signup-button" value="true">Реєстрація</button>
-			</div>
-		</div>
-
-		
+    <div class="row">
+        <div class="col">
+            <div class="form-check">
+                <input class="form-check-input @classes["agreement"]" type="checkbox" value="true" name="user-agreement" id="agreement">
+                <label class="form-check-label" for="agreement">Согласен с правилами сайта</label>
+            </div>
+            @if (isFormInvalid && Model.ValidationsErrors?.ContainsKey("agreement") == true)
+            {
+                <div class="invalid-feedback">@Model.ValidationsErrors["agreement"]</div>
+            }
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-secondary" name="signup-button" value="true">Регистрация</button>
+        </div>
+    </div>
 </form>

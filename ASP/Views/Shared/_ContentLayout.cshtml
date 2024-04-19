@@ -60,18 +60,18 @@
                                asp-controller="Home" asp-action="Model"><i class="bi bi-clipboard-data"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" title="Адміністрування контенту"
-                               asp-controller="Home" asp-action="Admin"><i class="bi bi-pencil-square"></i></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" title="Контент"
-                               asp-controller="Content" asp-action="Index"><i class="bi bi-house-heart-fill"></i></a>
+                            <a class="nav-link text-dark" asp-area="" title="Admin"
+                               asp-controller="Home" asp-action="Admin">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
                         </li>
                     </ul>
+
                     @if (isAuthenticated)
                     {
                         <img class="logo" src="/img/avatars/@(avatar == "" ? "no-avatar.png" : avatar)" alt="avatar" />
-                        <a class="nav-link text-dark" asp-area="" title="Выйти" asp-controller="Home" asp-action="Index" asp-route-logout="true">
+                        <a class="nav-link text-dark" asp-area="" title="Выход"
+                           asp-controller="Home" asp-action="Index" asp-route-logout="true">
                             <i class="bi bi-box-arrow-right"></i>
                         </a>
                     }
@@ -89,11 +89,11 @@
                 </div>
             </div>
         </nav>
+        <div class="sub-header">
+            <h2>Ваш найкращий вибір</h2>
+            <h3>Це ми</h3>
+        </div>
     </header>
-    <div class="sub-header">
-        <h2>Ваш найкращий вибір</h2>
-        <h3>Це ми</h3>
-    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -105,6 +105,10 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
+            @if (Context.User.Identity?.IsAuthenticated ?? false)
+            {
+                <b>Вы вошли в систему</b>
+            }
             &copy; 2024 - ASP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
 
@@ -176,4 +180,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-

@@ -1,20 +1,19 @@
-﻿@model ASP.Models.Content.Index.ContentIndexPageModel
-@{
+﻿@{
     Layout = "_ContentLayout";
 }
 <h1>Content</h1>
 <div class="card-group">
-    <div class="row row-cols-1 row-cols-md-4 g-4">
+    <div class="row row-cols-1 row-cols-md-2 g-4">
         @foreach (var category in Model.Categories)
         {
-            @Html.DisplayFor(m => category)
+            @Html.DisplayFor(m => category, "Category")
         }
     </div>
 </div>
 
 <h2>Частинні представлення</h2>
 <p>
-    Для відображення комплексних даних (наприклад: категорії) вживаються частинні представлення. 
+    Для відображення комплексних даних (наприклад: категорії) вживаються частинні представлення.
     Їх розміщують в окремій директорії DisplayTemplates у директорії з даним представленням (Views/Content).
     За замовчуванням назва представлення - тип даних, для якого воно призначене, але це не принципово.
     У частинному представленні зазначаємо моедль, а в основному представленні передаємо дані
