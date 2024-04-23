@@ -1,6 +1,8 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿@model ASP.Models.Home.Privacy.PrivacyPageModel
 
-<p>Use this page to detail your site's privacy policy.</p>
+@{
+    ViewData["Title"] = @Model.TabHeader;
+}
+<h1>@Model.PageTitle</h1>
+
+<p>@Model.PageText</p>

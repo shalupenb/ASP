@@ -1,26 +1,27 @@
 ﻿using ASP.Data.Entities;
 using ASP.Services.Kdf;
+
 namespace ASP.Data.DAL
 {
 	public class UserDao
 	{
+		private readonly Object _dblocker;
 		private readonly DataContext _dataContext;
 		private readonly IKdfService _kdfService;
-		private readonly Object _dbLocker;
-		public UserDao(DataContext dataContext, IKdfService kdfService, object dbLocker)
+
+		public UserDao(DataContext dataContext, IKdfService kdfService, object dblocker)
 		{
 			_dataContext = dataContext;
 			_kdfService = kdfService;
-			_dbLocker = dbLocker;
+			_dblocker = dblocker;
 		}
-
 
 		public User? GetUserById(String id)
 		{
 			User? user;
 			try
 			{
-				lock (_dbLocker)
+				lock (_dblocker)
 				{
 					user = _dataContext.Users.Find(Guid.Parse(id));
 				}
@@ -28,19 +29,24 @@ namespace ASP.Data.DAL
 			catch { return null; }
 			return user;
 		}
-        public User? Authorize(String email, String password) 
-		{ 
-			var user = _dataContext.Users
+
+		public User? Authorize(String email, String password)
+		{
+			var user = _dataContext
+				.Users
 				.FirstOrDefault(x => x.Email == email);
-			if (user == null || user.Derivedkey != _kdfService.DerivedKey(user.Salt, password)) 
+
+			if (user == null ||
+				user.Derivedkey != _kdfService.DerivedKey(user.Salt, password))
 			{
 				return null;
 			}
 			return user;
 		}
-		public void Signup( User user)
+
+		public void Signup(User user)
 		{
-			if (user.Id == default) 
+			if (user.Id == default)
 			{
 				user.Id = Guid.NewGuid();
 			}
@@ -49,3 +55,7 @@ namespace ASP.Data.DAL
 		}
 	}
 }
+
+/* DAL - Data Access Layer - сукупність ycіх DAO
+ * DAO - Data Access Object - набір методів для роботи з сутністю
+ */

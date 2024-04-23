@@ -1,14 +1,13 @@
 ﻿@model ASP.Data.Entities.Location
-<div class="col">
 
+<div class="col">
 	<div class="card h-100" style="width: 18rem;">
 		<a asp-action="Location" asp-route-id="@(Model.Slug)">
-			<img src="~/img/content/@(Model.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="image">
+			<img src="~/img/content/@(Model.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="...">
 			<div class="card-body">
-				<p class="card-title">@Model.Name</p>
+				<h5 class="card-title">@Model.Name</h5>
 				<p class="card-text">@Model.Description</p>
+			</div>
 		</a>
 	</div>
-</div>
-
 </div>

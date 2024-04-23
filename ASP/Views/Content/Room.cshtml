@@ -1,0 +1,45 @@
+﻿@using System.Security.Claims
+@model ASP.Models.Content.Room.ContentRoomPageModel
+@{
+    bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
+    Guid? userId = isAuthenticated
+    ? Guid.Parse(Context.User.Claims.First(claim => claim.Type == ClaimTypes.Sid).Value)
+    : null;
+}
+
+<div class="row">
+    <div class="col col-8">
+        <h1>Кiмната: @Model.Room.Name</h1>
+        <img src="~/img/content/@(Model.Room.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="...">
+        <p>@Model.Room.Description</p>
+    </div>
+    <div class="col col-4">
+        @for (int i = 1; i < 31; ++i)
+        {
+            DateTime date = new DateTime(2024, 4, i);
+            var reservation = Model.Room.Reservations.FirstOrDefault(r => r.Date == date);
+            bool isReserved = reservation != null;
+            bool isOwn = reservation?.UserId != null &&
+            reservation?.UserId == userId;
+            <p>
+                @i.04.2024
+                @(isReserved ? " Заброньована" : "Вiльна")
+                @if (isReserved && isOwn)
+                {
+                    <button>Скасувати</button>
+                }
+                @if (!isReserved && isAuthenticated)
+                {
+                    <button data-user-id="@(userId)"
+                            data-room-name ="@(Model.Room.Name)"
+                            data-room-id="@(Model.Room.Id)"
+                            data-room-price="@(Model.Room.DailyPrice)"
+                            data-date="2024-04-@(i.ToString("00"))"
+                            data-type="reserve-room">
+                        Забронювати
+                    </button>
+                }
+            </p>
+        }
+    </div>
+</div>

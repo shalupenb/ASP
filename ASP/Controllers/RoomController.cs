@@ -1,5 +1,7 @@
 ﻿using ASP.Data.DAL;
-using ASP.Models.Content.location;
+using ASP.Data.Entities;
+using ASP.Models.Content.Location;
+using ASP.Models.Content.Room;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +9,21 @@ namespace ASP.Controllers
 {
     [Route("api/room")]
     [ApiController]
-    public class RoomController(DataAccessor dataAccessor) : ControllerBase
+    public class RoomController(DataAccessor dataAccessor, ILogger<RoomController> logger) : ControllerBase
     {
         private readonly DataAccessor _dataAccessor = dataAccessor;
+        private readonly ILogger<RoomController> _logger = logger;
+
+        [HttpGet("all/{id}")]
+        public List<Room> GetRooms(String id)
+        {
+            // var location = _dataAccessor.ContentDao.GetLocationBySlug(id);
+            List<Room> rooms;
+            {
+                rooms = _dataAccessor.ContentDao.GetRooms(id);
+            }
+            return rooms;
+        }
 
         [HttpPost]
         public String DoPost(RoomFormModel model)
@@ -17,36 +31,33 @@ namespace ASP.Controllers
             try
             {
                 String? fileName = null;
-            if (model.Photo != null)
-            {
-
-                String ext = Path.GetExtension(model.Photo.FileName);
-                String path = Directory.GetCurrentDirectory() + "/wwwroot/img/content/";
-                String pathName;
-                do
+                if (model.Photo != null)
                 {
-                    fileName = Guid.NewGuid() + ext;
-                    pathName = path + fileName;
-
+                    String ext = Path.GetExtension(model.Photo.FileName);
+                    String path = Directory.GetCurrentDirectory() + "/wwwroot/img/content/";
+                    String pathName;
+                    do
+                    {
+                        fileName = Guid.NewGuid() + ext;
+                        pathName = path + fileName;
+                    }
+                    while (System.IO.File.Exists(pathName));
+                    using var stream = System.IO.File.OpenWrite(pathName);
+                    model.Photo.CopyTo(stream);
                 }
-                while (System.IO.File.Exists(pathName));
-                using var stream = System.IO.File.OpenWrite(pathName);
-                model.Photo.CopyTo(stream);
-            }
-            if(fileName==null)
+                if (fileName == null)
                 {
                     Response.StatusCode = StatusCodes.Status400BadRequest;
-                    return "File image requred";
+                    return "File Image required";
                 }
-            
                 _dataAccessor.ContentDao.AddRoom(
                     name: model.Name,
                     description: model.Description,
-                    photoUrl: "",
+                    photoUrl: fileName,
                     slug: model.Slug,
-                    LocationId: model.LocationId,
-                    stars: model.Stars
-                    );
+                    locationId: model.LocationId,
+                    stars: model.Stars,
+                    dailyPrice: model.DailyPrice);
                 Response.StatusCode = StatusCodes.Status201Created;
                 return "Added";
             }
@@ -55,7 +66,23 @@ namespace ASP.Controllers
                 Response.StatusCode = StatusCodes.Status500InternalServerError;
                 return ex.Message;
             }
+        }
 
+        [HttpPost("reserve")]
+        public String ReserveRoom([FromBody] ReserveRoomFormModel model)
+        {
+            try
+            {
+                _dataAccessor.ContentDao.ReserveRoom(model);
+                Response.StatusCode = StatusCodes.Status201Created;
+                return "Reserved";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return ex.Message;
+            }
         }
     }
 }

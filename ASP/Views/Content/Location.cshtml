@@ -1,12 +1,25 @@
-﻿@model ASP.Models.Content.location.ContentLocationPageModel
+﻿@model ASP.Models.Content.Location.ContentLocationPageModel
+
 @using System.Security.Claims
 @{
     bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
     bool isAdmin = isAuthenticated
-    ? Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.UserData)!= null
+    ? Context
+    .User
+    .Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.UserData)
+    != null
     : false;
 }
+
 <h1>Location: @Model.Location.Name</h1>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var room in Model.Rooms)
+    {
+        @Html.DisplayFor(m => room, "RoomTemplate")
+    }
+</div>
+
 
 @if (isAdmin)
 {
@@ -17,8 +30,8 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="room-name"><i class="bi bi-person-vcard"></i></span>
                     <input type="text" class="form-control"
-                    placeholder="Назва" name="room-name"
-                    aria-label="Room Name" aria-describedby="room-name">
+                           placeholder="Назва" name="room-name"
+                           aria-label="Room Name" aria-describedby="room-name">
                     <div class="invalid-feedback">Ім'я не може бути порожнім</div>
                 </div>
             </div>
@@ -26,8 +39,8 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="room-description"><i class="bi bi-envelope-at"></i></span>
                     <input type="text" class="form-control"
-                    name="room-description" placeholder="Опис"
-                    aria-label="Description" aria-describedby="room-description">
+                           name="room-description" placeholder="Опис"
+                           aria-label="Description" aria-describedby="room-description">
                     <div class="invalid-feedback">Опис не може бути порожнім</div>
                 </div>
             </div>
@@ -38,16 +51,16 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="room-slug"><i class="bi bi-lock"></i></span>
                     <input type="text" class="form-control" placeholder="Slug"
-                    name="room-slug"
-                    aria-label="Room Slug" aria-describedby="room-slug">
+                           name="room-slug"
+                           aria-label="Room Slug" aria-describedby="room-slug">
                 </div>
             </div>
             <div class="col">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="room-stars"><i class="bi bi-unlock"></i></span>
                     <input type="number" class="form-control"
-                    name="room-stars"
-                    aria-label="Room Stars" aria-describedby="room-stars">
+                           name="room-stars"
+                           aria-label="Room Stars" aria-describedby="room-stars">
                 </div>
             </div>
         </div>
@@ -59,14 +72,22 @@
                     <input type="file" class="form-control" name="room-photo" id="room-photo">
                 </div>
             </div>
-
+            <div class="col">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="room-price"><i class="bi bi-coin"></i></span>
+                    <input type="number" min="100" step="0.01" class="form-control" name="room-price"
+                           aria-label="Room Price" aria-describedby="room-price">
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col">
                 <button type="submit" class="btn btn-secondary"
-                name="room-button" value="true">
+                        name="room-button" value="true">
                     Додати
                 </button>
             </div>
         </div>
-        <input type="hidden" name="location-id" value="@Model.Location.id" />
+        <input type="hidden" name="location-id" value="@Model.Location.Id">
     </form>
 }

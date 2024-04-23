@@ -24,11 +24,11 @@ namespace ASP.Migrations
 
             modelBuilder.Entity("ASP.Data.Entities.Category", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DeletedDt")
+                    b.Property<DateTime?>("DeleteDt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -45,7 +45,7 @@ namespace ASP.Migrations
                     b.Property<string>("Slug")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("Slug")
                         .IsUnique()
@@ -56,9 +56,12 @@ namespace ASP.Migrations
 
             modelBuilder.Entity("ASP.Data.Entities.Location", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -69,7 +72,7 @@ namespace ASP.Migrations
                     b.Property<Guid?>("CountryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DeletedDt")
+                    b.Property<DateTime?>("DeleteDt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -89,10 +92,7 @@ namespace ASP.Migrations
                     b.Property<int?>("Stars")
                         .HasColumnType("int");
 
-                    b.Property<string>("adress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("Slug")
                         .IsUnique()
@@ -101,13 +101,40 @@ namespace ASP.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("ASP.Data.Entities.Room", b =>
+            modelBuilder.Entity("ASP.Data.Entities.Reservation", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DeletedDt")
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("ASP.Data.Entities.Room", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("DailyPrice")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("DeleteDt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -130,7 +157,7 @@ namespace ASP.Migrations
                     b.Property<int?>("Stars")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("Slug")
                         .IsUnique()
@@ -170,6 +197,35 @@ namespace ASP.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ASP.Data.Entities.Reservation", b =>
+                {
+                    b.HasOne("ASP.Data.Entities.Room", "Room")
+                        .WithMany("Reservations")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ASP.Data.Entities.User", "User")
+                        .WithMany("Reservations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ASP.Data.Entities.Room", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("ASP.Data.Entities.User", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

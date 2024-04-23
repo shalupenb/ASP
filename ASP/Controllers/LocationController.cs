@@ -15,41 +15,42 @@ namespace ASP.Controllers
 		{
 			_dataAccessor = dataAccessor;
 		}
+
 		[HttpGet("{id}")]
 		public List<Location> DoGet(String id)
 		{
-			return _dataAccessor.ContentDao.GetLocation(id);
+			return _dataAccessor.ContentDao.GetLocations(id);
 		}
-		[HttpPost]
-		public String DoPost([FromForm] LocationPostModel model)
-		{
 
+		[HttpPost]
+		public String Post([FromForm] LocationPostModel model)
+		{
 			try
 			{
-				String? fileName;
+				String? fileName = null;
 				if (model.Photo != null)
 				{
-
-					String ext = Path.GetExtension(model.Photo.FileName);
+					string ext = Path.GetExtension(model.Photo.FileName);
 					String path = Directory.GetCurrentDirectory() + "/wwwroot/img/content/";
 					String pathName;
 					do
 					{
-						fileName = Guid.NewGuid() + ext;
+						fileName = RandomStringService.GenerateFilename(10) + ext;
 						pathName = path + fileName;
-
 					}
 					while (System.IO.File.Exists(pathName));
-					using var stream = System.IO.File.OpenWrite(pathName);
-					model.Photo.CopyTo(stream);
+
+					using var steam = System.IO.File.OpenWrite(pathName);
+					model.Photo.CopyTo(steam);
 				}
 				_dataAccessor.ContentDao.AddLocation(
 					name: model.Name,
 					description: model.Description,
 					CategoryId: model.CategoryId,
-					Stars: model.Stars);
+					Stars: model.Stars,
+					PhotoUrl: fileName);
 				Response.StatusCode = StatusCodes.Status201Created;
-				return "Ok";
+				return "OK";
 			}
 			catch (Exception ex)
 			{
@@ -58,6 +59,7 @@ namespace ASP.Controllers
 			}
 		}
 	}
+
 	public class LocationPostModel
 	{
 		public String Name { get; set; }

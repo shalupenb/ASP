@@ -15,7 +15,7 @@ namespace ASP.Models
 
 		public static string GenerateFilename(int length)
 		{
-			const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+			const string chars = "abcdefghijklmnopqrstuvwxyz1234567890";
 			return GenerateRandomString(chars, length);
 		}
 

@@ -3,11 +3,11 @@
 <div class="col">
 	<div class="card h-100" style="width: 18rem;">
 		<a asp-action="Category" asp-route-id="@(Model.Slug)">
-		<img src="~/img/content/@(Model.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="image">
-		<div class="card-body">
-			<p class="card-title">@Model.Name</p>
-			<p class="card-text">@Model.Description</p>
-		</div>
+			<img src="~/img/content/@(Model.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">@Model.Name</h5>
+				<p class="card-text">@Model.Description</p>
+			</div>
 		</a>
 	</div>
 </div>

@@ -1,4 +1,4 @@
-﻿namespace ASP.Models.Content.location
+﻿namespace ASP.Models.Content.Location
 {
 	public class ContentLocationPageModel
 	{

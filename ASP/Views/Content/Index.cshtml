@@ -1,26 +1,28 @@
-﻿@{
-    Layout = "_ContentLayout";
+﻿@model ASP.Models.Content.Index.ContentIndexPageModel
+
+@{
+	Layout = "_ContentLayout";
 }
-<h1>Content</h1>
-<div class="card-group">
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        @foreach (var category in Model.Categories)
-        {
-            @Html.DisplayFor(m => category, "Category")
-        }
-    </div>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+	@foreach (var category in Model.Categories)
+	{
+		@Html.DisplayFor(m => category, "Category")
+	}
 </div>
 
 <h2>Частинні представлення</h2>
 <p>
-    Для відображення комплексних даних (наприклад: категорії) вживаються частинні представлення.
-    Їх розміщують в окремій директорії DisplayTemplates у директорії з даним представленням (Views/Content).
-    За замовчуванням назва представлення - тип даних, для якого воно призначене, але це не принципово.
-    У частинному представленні зазначаємо моедль, а в основному представленні передаємо дані
-    для частинного через <code>Html.DisplayFor</code>
-    Якщо назва представлення збігається з іменем типу даних, то достатньо
-    одного параметру - селектора даних
-    <code>Html.DisplayFor(m => category)</code>
-    Якщо не збігається, то
-    <code>Html.DisplayFor(m => category, "Category")</code>
+	Для відображення комплексних даних (наприклад, категорії) вживаються
+	частинні представлення. їх розміщують в окремій директорії
+	DisplayTemplates у директорії з даним представленням (Views/Content)).
+	За замовчанням назва представлення - тип даних, для якого воно призначене,
+	але це не принципово.
+	У частинному представленні зазначаємо модель, а в основному представленні
+	передаємо дані для частинного через <code>Html.DisplayFor</code>
+	Якщо назва представлення збігається з іменем типу даних, то достатньо
+	одного параметру - селектора даних
+	<code>Html.DisplayFor(m => category)</code>
+	якщо не збігається або якщо для одного типу потрібно декілька представлень,
+	то другим параметром можна передати його назву
+	<code>Html.DisplayFor(m => category, "Category"D</code>
 </p>
