@@ -45,7 +45,7 @@ namespace ASP.Controllers
                 });
         }
 
-        public IActionResult Room([FromRoute] String id)
+        public IActionResult Room([FromRoute] String id, [FromQuery]int? year, [FromQuery]int? month)
         {
 			var room = _dataAccessor.ContentDao.GetRoomBySlug(id);
 
@@ -53,7 +53,9 @@ namespace ASP.Controllers
 				? View("NotFound")
 				: View(new ContentRoomPageModel()
 				{
-					Room = room
+					Room = room,
+                    Year = year ?? DateTime.Today.Year,
+                    Month = month ?? DateTime.Today.Month,
 				});
 		}
     }

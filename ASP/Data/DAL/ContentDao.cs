@@ -193,18 +193,28 @@ namespace ASP.Data.DAL
 			{
 				throw new ArgumentException("Date must not be in past");
 			}
-			try
+			Room? room;
+			lock(_dblocker)
 			{
-				_context.Reservations.Add(new()
-				{
-					Id = Guid.NewGuid(),
-					Date = model.Date,
-					RoomId = model.RoomId,
-					UserId = model.UserId
-				});
-				_context.SaveChanges();
+				room = _context.Rooms.Find(model.RoomId);
 			}
-			catch { throw; }
+			if(room == null)
+			{
+				throw new ArgumentException("Room not found for id = " + model.RoomId);
+			}
+			lock( _dblocker)
+			{
+                _context.Reservations.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    Date = model.Date,
+                    RoomId = model.RoomId,
+                    UserId = model.UserId,
+					Price = room.DailyPrice,
+					OrderDt = DateTime.Now
+                });
+                _context.SaveChanges();
+            }
 		}
 	}
 }

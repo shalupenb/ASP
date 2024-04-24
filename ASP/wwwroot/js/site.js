@@ -188,4 +188,7 @@ function serveReserveButtons() {
             }
         });
     }
+    for (let btn of document.querySelectorAll('[data-type="drop-reserve-room"]')) {
+
+    }
 }

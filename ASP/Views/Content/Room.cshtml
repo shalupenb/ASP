@@ -7,6 +7,7 @@
     : null;
 }
 
+@Model.Year
 <div class="row">
     <div class="col col-8">
         <h1>Кiмната: @Model.Room.Name</h1>
@@ -14,32 +15,72 @@
         <p>@Model.Room.Description</p>
     </div>
     <div class="col col-4">
-        @for (int i = 1; i < 31; ++i)
+        <form>
+        Бронювання кімнати на <select name="month">
+            @for(int i = 1; i <= 12; ++i)
+            {
+                if(i == Model.Month)
+                {
+                    <option selected value="@i">@(i.ToString("D2"))</option>
+                }
+                else
+                {
+                    <option value="@i">@(i.ToString("D2"))</option>
+                }
+            }
+            </select> місяц <select name="year">
+                @for (int i = DateTime.Today.Year; i <= DateTime.Today.Year + 1; ++i)
+            {
+                if (i == Model.Year)
+                {
+                    <option selected value="@i">@i</option>
+                }
+                else
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        </select> року <button>Оновити</button>
+        </form>
+        <br/>
+        @{int freeDays = 0;}
+        @for (int i = 1; i <= DateTime.DaysInMonth(Model.Year, Model.Month); ++i)
         {
-            DateTime date = new DateTime(2024, 4, i);
+            DateTime date = new DateTime(Model.Year, Model.Month, i);
+            if (date < DateTime.Today)
+            {
+                continue;
+            }
             var reservation = Model.Room.Reservations.FirstOrDefault(r => r.Date == date);
             bool isReserved = reservation != null;
             bool isOwn = reservation?.UserId != null &&
             reservation?.UserId == userId;
+            @if (!isReserved) freeDays++;
             <p>
-                @i.04.2024
+                @i.@Model.Month.ToString("D2").@Model.Year
                 @(isReserved ? " Заброньована" : "Вiльна")
                 @if (isReserved && isOwn)
                 {
-                    <button>Скасувати</button>
+                    <button data-type="drop-reserve-room" 
+                            data-reserve-id="@(reservation!.Id)"
+                    >Скасувати</button>
                 }
                 @if (!isReserved && isAuthenticated)
                 {
                     <button data-user-id="@(userId)"
-                            data-room-name ="@(Model.Room.Name)"
+                            data-room-name="@(Model.Room.Name)"
                             data-room-id="@(Model.Room.Id)"
                             data-room-price="@(Model.Room.DailyPrice)"
-                            data-date="2024-04-@(i.ToString("00"))"
+                            data-date="@Model.Year-@(Model.Month.ToString("D2"))-@(i.ToString("00"))"
                             data-type="reserve-room">
                         Забронювати
                     </button>
                 }
             </p>
+        }
+        @if(freeDays == 0)
+        {
+            <b>Бронювання в цьому місяці недоступне</b>
         }
     </div>
 </div>

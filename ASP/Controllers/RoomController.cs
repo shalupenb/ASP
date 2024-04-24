@@ -25,6 +25,22 @@ namespace ASP.Controllers
             return rooms;
         }
 
+        [HttpGet("{id}")]
+        public Room? GetRoom([FromRoute] String id/*, [FromQuery] int? year, [FromQuery] int? month*/)
+        {
+            var room = _dataAccessor.ContentDao.GetRoomBySlug(id);
+            if(room == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return null;
+            }
+            room.Reservations = room.Reservations
+                .Where(r => r.Date >= DateTime.Today).ToList();
+            //room.Reservations.ForEach(r => { r.Room = null!; r.User = null!; });
+
+            return room;
+        }
+
         [HttpPost]
         public String DoPost(RoomFormModel model)
         {

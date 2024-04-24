@@ -50,3 +50,8 @@ body {
     height: 25vh;
     min-height: 150px;
 }
+
+.card a {
+    text-decoration: none;
+    color: inherit;
+}
