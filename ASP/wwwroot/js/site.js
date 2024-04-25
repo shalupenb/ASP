@@ -189,6 +189,24 @@ function serveReserveButtons() {
         });
     }
     for (let btn of document.querySelectorAll('[data-type="drop-reserve-room"]')) {
-
+        btn.addEventListener('click', e => {
+            const cont = e.target.closest('[data-type="drop-reserve-room"]');
+            const reserveId = cont.getAttribute('data-reserve-id');
+            const reserveName = cont.getAttribute('data-room-name');
+            const reserveDate = cont.getAttribute('data-date');
+            if (!confirm("Підтверджуєте скасування бронювання номеру: " + reserveName + " на дату: " + reserveDate)) {
+                return;
+            }
+            fetch('/api/room/reserve?reserveId=' + reserveId, {
+                method: 'DELETE',
+            }).then(r => {
+                if (r.status === 202) {
+                    window.location.reload();
+                }
+                else {
+                    r.text().then(alert);
+                }
+            });
+        });
     }
 }

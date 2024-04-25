@@ -100,5 +100,26 @@ namespace ASP.Controllers
                 return ex.Message;
             }
         }
+        [HttpDelete("reserve")]
+        public String DropReservation([FromQuery] Guid reserveId)
+        {
+            if(reserveId == default)
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return "Guid parse error";
+            }
+            try
+            {
+                _dataAccessor.ContentDao.DeleteReservation(reserveId);
+                Response.StatusCode = StatusCodes.Status202Accepted;
+                return "";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return ex.Message;
+            }
+        }
     }
 }

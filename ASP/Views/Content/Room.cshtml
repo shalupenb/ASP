@@ -63,7 +63,10 @@
                 {
                     <button data-type="drop-reserve-room" 
                             data-reserve-id="@(reservation!.Id)"
-                    >Скасувати</button>
+                            data-room-name="@(Model.Room.Name)"
+                            data-date="@(i.ToString("00")).@(Model.Month.ToString("D2")).@Model.Year">
+                        Скасувати
+                    </button>
                 }
                 @if (!isReserved && isAuthenticated)
                 {

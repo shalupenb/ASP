@@ -10,6 +10,7 @@ namespace ASP.Data.Entities
         public DateTime Date { get; set; }
         public Double Price { get; set; }
         public DateTime OrderDt { get; set; }
+        public DateTime? DeletedDt { get; set; }
 
         // NAVIGATION PROPS
         [JsonIgnore] public User User { get; set; }

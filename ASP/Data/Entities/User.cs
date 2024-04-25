@@ -9,6 +9,8 @@
 		public string Salt { get; set; } // 3a RFC-2898
 		public string Derivedkey { get; set; } // 3a RFC-2898
 		public DateTime? Birthdate { get; set; }
+        public DateTime? DeletedDt { get; set; }
+		public String? Role { get; set; }
 
 
         public List<Reservation> Reservations { get; set; }

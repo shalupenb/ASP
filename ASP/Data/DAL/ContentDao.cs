@@ -183,6 +183,10 @@ namespace ASP.Data.DAL
 					.Include(r=> r.Reservations)
 					.FirstOrDefault(id == null ? slugSelector : idSelector);
 			}
+			if(room != null)
+			{
+                room.Reservations = room.Reservations.Where(r => r.DeletedDt == null).ToList();
+            }
 			return room;
 		}
 
@@ -216,5 +220,28 @@ namespace ASP.Data.DAL
                 _context.SaveChanges();
             }
 		}
-	}
+
+        public void DeleteReservation(Guid id)
+		{
+			Reservation? reservation;
+			lock(_dblocker)
+			{
+				reservation = _context.Reservations.Find(id);
+			}
+			if(reservation == null)
+			{
+				throw new ArgumentException("Passed id not found");
+			}
+			if(reservation.DeletedDt != null)
+			{
+                throw new ArgumentException("Passed id already deleted");
+            }
+			reservation.DeletedDt = DateTime.Now;
+			lock(_dblocker)
+			{
+				_context.SaveChanges();
+			}
+		}
+
+    }
 }
