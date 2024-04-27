@@ -42,7 +42,7 @@ namespace ASP.Controllers
 					using var steam = System.IO.File.OpenWrite(pathName);
 					model.Photo.CopyTo(steam);
 				}
-				_dataAccessor.ContentDao.AddCategory(model.Name, model.Description, fileName);
+				_dataAccessor.ContentDao.AddCategory(model.Name, model.Description, fileName, model.Slug);
 				Response.StatusCode = StatusCodes.Status201Created;
 				return "OK";
 			}
@@ -56,8 +56,13 @@ namespace ASP.Controllers
 	}
 	public class CategoryPostModel
 	{
+		[FromForm(Name = "category-name")]
 		public String Name { get; set; }
+		[FromForm(Name = "category-description")]
 		public String Description { get; set; }
+		[FromForm(Name = "category-slug")]
+		public String Slug { get; set; }
+		[FromForm(Name = "category-photo")]
 		public IFormFile? Photo { get; set; } 
 	}
 }

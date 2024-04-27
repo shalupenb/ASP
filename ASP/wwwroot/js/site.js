@@ -1,5 +1,5 @@
 ﻿document.addEventListener('submit', e => {
-    console.log(e);
+    //console.log(e);
     const form = e.target;
     if (form.id == 'room-form')// перехоплюємо надсилання форми і переводимо до аякс
     {
@@ -19,6 +19,17 @@
             }
         });
     }
+    if (form.id == 'category-form') {
+        e.preventDefault();
+        let formData = new FormData(form);
+        ctgId = formData.get("category-id");
+        if (ctgId) {
+            console.log("Оновлення категорії " + ctgId);
+        }
+        else {
+            console.log("Додавання нової категорії");
+        }
+    }
     // на інші форми ми не вплюваємо
 });
 document.addEventListener('DOMContentLoaded', function () {
@@ -27,7 +38,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initAdminPage();
     serveReserveButtons();
+    serveAdminButtons();
 });
+
+function serveAdminButtons() {
+    for (let btn of document.querySelectorAll('[data-type="edit-category"]'))
+        btn.addEventListener('click', e => {
+            let b = e.target.closest('[data-type="edit-category"]');
+            document.querySelector("[name=category-id]").value =
+                b.getAttribute("data-category-id");
+            document.querySelector("[name=category-name]").value =
+                b.getAttribute("data-category-name");
+            document.querySelector("[name=category-description]").value =
+                b.getAttribute("data-category-description");
+            document.querySelector("[name=category-slug]").value =
+                b.getAttribute("data-category-slug");
+        });
+}
 
 function authButtonClick() {
     const authEmail = document.getElementById("auth-email");
