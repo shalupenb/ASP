@@ -10,6 +10,8 @@ using ASP.Models.Home.Signup;
 using System.Text.RegularExpressions;
 using ASP.Data.DAL;
 using ASP.Services.Kdf;
+using ASP.Services.Email;
+using System.Net.Mail;
 
 namespace ASP.Controllers
 {
@@ -28,6 +30,7 @@ namespace ASP.Controllers
 		private readonly DataContext _dataContext;
 		private readonly DataAccessor _dataAccessor;
 		private readonly IKdfService _kdfService;
+		private readonly IEmailService _emailService;
 
 		private readonly ILogger<HomeController> _logger;
 
@@ -35,13 +38,14 @@ namespace ASP.Controllers
 		private readonly IHashService _hashService;
 
 		//додаємо до конструктора параметр-залежність і зберігаємо її у тілі
-		public HomeController(IHashService hashService, ILogger<HomeController> logger, DataContext dataContext, DataAccessor dataAccessor, IKdfService kdfService)
+		public HomeController(IHashService hashService, ILogger<HomeController> logger, DataContext dataContext, DataAccessor dataAccessor, IKdfService kdfService, IEmailService emailService)
 		{
 			_logger = logger;               // Збереження переданих залежностей, що їх
 			_hashService = hashService;     // передає контейнер при створенні контролера
 			_dataContext = dataContext;
 			_dataAccessor = dataAccessor;
 			_kdfService = kdfService;
+			_emailService = emailService;
 		}
 		public IActionResult Index()
 		{
@@ -204,16 +208,35 @@ namespace ASP.Controllers
 				pageModel.ValidationErrors = _ValidateSingupModel(formModel);
 				if(pageModel.ValidationErrors.Count == 0)
 				{
-					String salt = RandomStringService.GenerateSalt(10);
-					_dataAccessor.UserDao.Signup(new()
+					String code = RandomStringService.GenerateOTP(6);
+					MailMessage mailMessage = new()
 					{
-						Name = formModel.UserName,
-						Email = formModel.UserEmail,
-						Birthdate = formModel.UserBirthdate,
-						AvatarUrl = formModel.SavedAvatarFilename,
-						Salt = salt,
-						Derivedkey = _kdfService.DerivedKey(salt, formModel.Password)
-					});
+						Subject = "Підтвердження пошти",
+						IsBodyHtml = true,
+						Body = "<p>Для підтвердження пошти введіть на сайті код</p>" +
+						$"<h2 style='color: steelblue'>{code}</h2>"
+					};
+					mailMessage.To.Add(formModel.UserEmail);
+					try 
+					{
+						_emailService.Send(mailMessage);
+						String salt = RandomStringService.GenerateSalt(10);
+						_dataAccessor.UserDao.Signup(new()
+						{
+							Name = formModel.UserName,
+							Email = formModel.UserEmail,
+							EmailConfirmCode = code,
+							Birthdate = formModel.UserBirthdate,
+							AvatarUrl = formModel.SavedAvatarFilename,
+							Salt = salt,
+							Derivedkey = _kdfService.DerivedKey(salt, formModel.Password)
+						});
+					}
+					catch (Exception ex)
+					{
+						pageModel.ValidationErrors["email"] = "Не вдалося надіслати email";
+						_logger.LogInformation(ex.Message);
+					}
 				}
 			}
 			//_logger.LogInformation(Directory.GetCurrentDirectory());
