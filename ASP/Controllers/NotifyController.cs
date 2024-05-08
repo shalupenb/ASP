@@ -22,7 +22,7 @@ namespace ASP.Controllers
 					IsBodyHtml = true,
 					Body = "<h1>Шановний користувач!</h1><br/>" +
 					"<p style='color: steelblue'>Вітаємо на сайті " +
-					$"<a href='{Request.Host}'>ASP</a></p>"
+					$"<a href='{Request.Scheme}://{Request.Host}'>ASP</a></p>"
 				};
 				mailMessage.To.Add(new MailAddress("danyacorporation6@gmail.com"));
 				_emailService.Send(mailMessage);

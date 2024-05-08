@@ -58,6 +58,12 @@ namespace ASP.Controllers
 				return "Error";
 			}
 		}
+
+		[HttpPatch]
+		public Location? DoPatch(String slug)
+		{
+			return _dataAccessor.ContentDao.GetLocationBySlug(slug);
+		}
 	}
 
 	public class LocationPostModel

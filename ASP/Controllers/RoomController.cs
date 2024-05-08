@@ -84,6 +84,17 @@ namespace ASP.Controllers
             }
         }
 
+        [HttpGet("reserve/{id}")]
+        public List<Reservation> GetReservations(String id)
+        {
+            Room? room;
+            lock(this)
+            {
+                room = _dataAccessor.ContentDao.GetRoomBySlug(id);
+            }
+            return room?.Reservations;
+        }
+
         [HttpPost("reserve")]
         public String ReserveRoom([FromBody] ReserveRoomFormModel model)
         {
@@ -100,6 +111,7 @@ namespace ASP.Controllers
                 return ex.Message;
             }
         }
+
         [HttpDelete("reserve")]
         public String DropReservation([FromQuery] Guid reserveId)
         {
@@ -121,5 +133,11 @@ namespace ASP.Controllers
                 return ex.Message;
             }
         }
-    }
+
+		[HttpPatch]
+		public Room? DoPatch(String slug)
+		{
+			return _dataAccessor.ContentDao.GetRoomBySlug(slug);
+		}
+	}
 }

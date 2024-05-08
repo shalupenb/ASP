@@ -52,6 +52,20 @@ namespace ASP.Controllers
 		{
 			return new {Status  = "PUT Works" };
 		}
+		[HttpPatch]
+		public object Patch(String email, String code) //Confirm Email by code
+		{
+			if(_dataAccessor.UserDao.ConfirmEmail(email, code))
+			{
+				Response.StatusCode = StatusCodes.Status202Accepted;
+				return new { StatusCode = "OK" };
+			}
+			else
+			{
+				Response.StatusCode = StatusCodes.Status409Conflict;
+				return new { Status = "Error" };
+			}
+		}
 	}
 }
 /* Контролери поділяються на дві групи - API та MVC

@@ -4,6 +4,11 @@
 	String avatar = isAuthenticated
 	? Context.User.Claims.First(claim => claim.Type == ClaimTypes.UserData).Value
 	: "";
+	String email = isAuthenticated
+	? Context.User.Claims.First(claim => claim.Type == ClaimTypes.Email).Value
+	: "";
+	String EmailConfirmCode = Context.User.Claims.FirstOrDefault(claim => claim.Type == "EmailConfirmCode")?.Value ?? "";
+	bool isEmailConfirmed = EmailConfirmCode == "";
 }
 
 <!DOCTYPE html>
@@ -72,6 +77,10 @@
 					@if (isAuthenticated)
 					{
 						<img class="user_logo" src="/img/avatars/@(avatar == "" ? "no-avatar.png" : avatar)" alt="avatar" />
+						if(!isEmailConfirmed)
+						{
+							<i data-bs-toggle="modal" data-bs-target="#emailModal" style="color: red; padding-left: 10px; cursor: pointer" class="bi bi-envelope-dash" title="Ваша пошта не підтверджена"></i>
+						}
 						<a class="nav-link text-dark" asp-area="" title="Вихiд"
 						   asp-controller="Home" asp-route-logout="true" asp-action="Index"><i class="bi bi-box-arrow-right"></i></a>
 					}
@@ -100,7 +109,7 @@
 		</div>
 	</footer>
 
-
+	<!--Auth Modal-->
 	<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -129,6 +138,34 @@
 					</div>
 					<div class="spacer"></div>
 					<button type="button" class="btn btn-primary" id="auth-button">Вхiд</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Email Confirm Modal -->
+	<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="emailModalLabel">Введіть код з пошти</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="input-group mb-3">
+							<span class="input-group-text" id="email-code-icon"><i class="bi bi-123"></i></span>
+							<input type="text" class="form-control" placeholder="Code"
+								   aria-label="Email" aria-describedby="email-code-icon"
+								   id="email-code" data-email="@(email)">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div id="email-message" class="alert alert-warning visually-hidden" role="alert">
+					</div>
+					<div class="spacer"></div>
+					<button type="button" class="btn btn-primary" id="confirm-email-button">Підтвердити</button>
 				</div>
 			</div>
 		</div>

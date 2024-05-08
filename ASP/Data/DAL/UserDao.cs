@@ -53,6 +53,26 @@ namespace ASP.Data.DAL
 			_dataContext.Users.Add(user);
 			_dataContext.SaveChanges();
 		}
+
+		public Boolean ConfirmEmail(String email, String code)
+		{
+			//Find User by email
+			User? user;
+			lock (_dblocker)
+			{
+				user = _dataContext.Users.FirstOrDefault(u => u.Email == email);				
+			}
+			if (user == null || user.EmailConfirmCode != code)
+			{
+				return false;
+			}
+			user.EmailConfirmCode = null;
+			lock (_dblocker)
+			{
+				_dataContext.SaveChanges();
+			}
+			return true;
+		}
 	}
 }
 

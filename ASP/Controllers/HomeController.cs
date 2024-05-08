@@ -47,6 +47,24 @@ namespace ASP.Controllers
 			_kdfService = kdfService;
 			_emailService = emailService;
 		}
+		public IActionResult ConfirmEmail(String id)
+		{
+			// dXNlckBpLnVhOnF3ZTMyMQ== || user@i.ua:123
+			String email, code;
+			try
+			{
+				String data = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(id));
+				String[] parts = data.Split(':', 2);
+				email = parts[0];
+				code = parts[1];
+				ViewData["result"] = _dataAccessor.UserDao.ConfirmEmail(email, code) ? "Пошта успішно підтверджена" : "Помилка рідтвердження пошти";
+			}
+			catch
+			{
+				ViewData["result"] = "Дані не розпізнані";
+			}
+			return View();
+		}
 		public IActionResult Index()
 		{
 			return View();
@@ -209,13 +227,16 @@ namespace ASP.Controllers
 				if(pageModel.ValidationErrors.Count == 0)
 				{
 					String code = RandomStringService.GenerateOTP(6);
+					String slug = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{formModel.UserEmail}:{code}"));
 					MailMessage mailMessage = new()
 					{
 						Subject = "Підтвердження пошти",
 						IsBodyHtml = true,
 						Body = "<p>Для підтвердження пошти введіть на сайті код</p>" +
-						$"<h2 style='color: steelblue'>{code}</h2>"
+						$"<h2 style='color: steelblue'>{code}</h2>" +
+						$"<p>Або перейдіть за <a href='{Request.Scheme}://{Request.Host}/Home/ConfirmEmail/{slug}'>цим посиланням</a></p>"
 					};
+					_logger.LogInformation(mailMessage.Body);
 					mailMessage.To.Add(formModel.UserEmail);
 					try 
 					{

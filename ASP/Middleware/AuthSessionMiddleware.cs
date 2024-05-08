@@ -31,11 +31,12 @@ namespace ASP.Middleware
 				if (user != null)
 				{
 					Claim[] claims = new Claim[] {
-					new (ClaimTypes.Sid,        userId),
-					new (ClaimTypes.Email,      user.Email),
-					new (ClaimTypes.Name,       user.Name),
-					new (ClaimTypes.UserData,   user.AvatarUrl ?? ""),
-					new(ClaimTypes.Role,		user.Role ?? ""),
+						new (ClaimTypes.Sid,        userId),
+						new (ClaimTypes.Email,      user.Email),
+						new (ClaimTypes.Name,       user.Name),
+						new (ClaimTypes.UserData,   user.AvatarUrl ?? ""),
+						new(ClaimTypes.Role,		user.Role ?? ""),
+						new("EmailConfirmCode", user.EmailConfirmCode ?? "")
 					};
 
 					context.User = new ClaimsPrincipal(
