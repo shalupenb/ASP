@@ -80,6 +80,52 @@ function serveAdminButtons() {
             document.querySelector("[name=category-slug]").value =
                 b.getAttribute("data-category-slug");
         });
+    for (let btn of document.querySelectorAll('[data-type="delete-category"]')) {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            let b = e.target.closest('[data-type="delete-category"]');
+            let id = b.getAttribute("data-category-id");
+            if (id) {
+                if (confirm("Ви підтверджуєте видалення категорії?")) {
+                    fetch(`/api/category/${id}`, { method: 'DELETE' }).then(r => {
+                        if (r.status < 400) {
+                            window.location.reload();
+                        }
+                        else {
+                            alert("Виникла помилка видлаення");
+                        }
+                    })
+                }
+            }
+            else {
+                alert("Помилка розмітки - немає id елемента");
+            }
+        });
+    }
+
+    for (let btn of document.querySelectorAll('[data-type="restore-category"]')) {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            let b = e.target.closest('[data-type="restore-category"]');
+            let id = b.getAttribute("data-category-id");
+            if (id) {
+                if (confirm("Ви підтверджуєте відновлення категорії?")) {
+                    fetch(`/api/category?id=${id}`, { method: 'RESTORE' }).then(r => {
+                        if (r.status < 400) {
+                            window.location.reload();
+                            //r.text().then(console.log);
+                        }
+                        else {
+                            alert("Виникла помилка відновлення");
+                        }
+                    })
+                }
+            }
+            else {
+                alert("Помилка розмітки - немає id елемента");
+            }
+        });
+    }
 }
 
 function authButtonClick() {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ASP.Data.Entities;
 using ASP.Data.DAL;
 using ASP.Models;
+using System.Security.Claims;
 
 namespace ASP.Controllers
 {
@@ -19,7 +20,9 @@ namespace ASP.Controllers
 		[HttpGet]
 		public List<Category> DoGet()
 		{
-			return _dataAccessor.ContentDao.GetCategories();
+			String? userRole = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+			bool isAdmin = "Admin".Equals(userRole);
+			return _dataAccessor.ContentDao.GetCategories(includeDeleted: isAdmin);
 		}
 
 		[HttpPost]
@@ -52,6 +55,41 @@ namespace ASP.Controllers
 				return "ERROR";
 			}
 
+		}
+
+		[HttpDelete("{id}")]
+		public String DoDelete(Guid id)
+		{
+			_dataAccessor.ContentDao.DeleteCategory(id);
+			Response.StatusCode = StatusCodes.Status202Accepted;
+			return "Ok";
+		}
+		
+		//Метод НЕ позначений атрибутом, буде викликано якщо не знайдеться необзідній з позначених. Це дозволяє прийняти нестандартні запити
+		public Object DoOther()
+		{ 
+			if(Request.Method == "RESTORE")
+			{
+				return DoRestore();
+			}
+			Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+			return "Method Not Allowed";
+		}
+		//Другий не позначений метод має бути private щоб не було конфлікту
+		private String DoRestore()
+		{
+			String? id = Request.Query["id"].FirstOrDefault();
+			try
+			{
+				_dataAccessor.ContentDao.RestoreCategory(Guid.Parse(id!));
+			}
+			catch
+			{
+				Response.StatusCode = StatusCodes.Status400BadRequest;
+				return "Empty or invalid id";
+			}
+			Response.StatusCode = StatusCodes.Status202Accepted;
+			return "RESTORE Ok for id = " + id;
 		}
 	}
 	public class CategoryPostModel

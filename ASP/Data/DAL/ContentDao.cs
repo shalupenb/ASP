@@ -29,13 +29,13 @@ namespace ASP.Data.DAL
                 _context.SaveChanges();
             }
 		}
-		public List<Category> GetCategories()
+		public List<Category> GetCategories(bool includeDeleted = false)
 		{
 			List<Category> list;
 			lock (_dblocker)
 			{
 				list = _context.Categories
-				.Where(c => c.DeleteDt == null)
+				.Where(c => includeDeleted || c.DeleteDt == null)
 				.ToList();
 			}
 			return list;
@@ -62,15 +62,32 @@ namespace ASP.Data.DAL
 				_context.SaveChanges();
 			}
 		}
+		public void RestoreCategory(Guid id)
+		{
+			var ctg = _context
+				.Categories
+				.Find(id);
+			if (ctg != null && ctg.DeleteDt != null)
+			{
+				ctg.DeleteDt = null;
+				lock (_dblocker)
+				{
+					_context.SaveChanges();
+				}
+			}
+		}
 		public void DeleteCategory(Guid id)
 		{
 			var ctg = _context
 				.Categories
 				.Find(id);
-			if (ctg != null)
+			if (ctg != null && ctg.DeleteDt == null)
 			{
 				ctg.DeleteDt = DateTime.Now;
-				_context.SaveChanges();
+				lock (_dblocker)
+				{
+					_context.SaveChanges();
+				}
 			}
 		}
 		public void DeleteCategory(Category category)
