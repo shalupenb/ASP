@@ -1,5 +1,6 @@
 ﻿using ASP.Data.Entities;
 using ASP.Services.Kdf;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASP.Data.DAL
 {
@@ -28,6 +29,42 @@ namespace ASP.Data.DAL
 			}
 			catch { return null; }
 			return user;
+		}
+		public User? GetUserByToken(Guid token)
+		{
+			User? user;
+			lock (_dblocker)
+			{
+				user = _dataContext.Tokens.Include(t => t.User).FirstOrDefault(t => t.Id == token)?.User;
+			}
+			return user;
+		}
+		public Token? CreateTokenForUser(User user)
+		{
+			return CreateTokenForUser(user.Id);
+		}
+		public Token? CreateTokenForUser(Guid userId)
+		{
+			Token token = new() { 
+				Id = Guid.NewGuid(),
+				UserId= userId,
+				SubmitDt = DateTime.Now,
+				ExpiresDt = DateTime.Now.AddDays(1),
+			};
+			_dataContext.Tokens.Add(token);
+			try
+			{
+				lock(_dblocker)
+				{
+					_dataContext.SaveChanges();
+				}
+				return token;
+			}
+			catch
+			{
+				_dataContext.Tokens.Remove(token);
+				return null;
+			}
 		}
 
 		public User? Authorize(String email, String password)

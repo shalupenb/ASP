@@ -175,6 +175,28 @@ namespace ASP.Migrations
                     b.ToTable("Rooms");
                 });
 
+            modelBuilder.Entity("ASP.Data.Entities.Token", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("SubmitDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tokens");
+                });
+
             modelBuilder.Entity("ASP.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -232,6 +254,17 @@ namespace ASP.Migrations
                         .IsRequired();
 
                     b.Navigation("Room");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ASP.Data.Entities.Token", b =>
+                {
+                    b.HasOne("ASP.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

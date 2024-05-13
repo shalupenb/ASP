@@ -1,4 +1,5 @@
 ﻿using ASP.Data.DAL;
+using ASP.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,6 +66,17 @@ namespace ASP.Controllers
 				Response.StatusCode = StatusCodes.Status409Conflict;
 				return new { Status = "Error" };
 			}
+		}
+		[HttpGet("token")]
+		public Token? GetToken(String email, String? password)
+		{
+			var user = _dataAccessor.UserDao.Authorize(email, password ?? "");
+			if(user == null)
+			{
+				Response.StatusCode = StatusCodes.Status401Unauthorized;
+				return null;
+			}
+			return _dataAccessor.UserDao.CreateTokenForUser(user);
 		}
 	}
 }

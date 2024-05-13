@@ -4,6 +4,8 @@ using ASP.Data.Entities;
 using ASP.Data.DAL;
 using ASP.Models;
 using System.Security.Claims;
+using Microsoft.Extensions.Primitives;
+using ASP.Middleware;
 
 namespace ASP.Controllers
 {
@@ -28,6 +30,17 @@ namespace ASP.Controllers
 		[HttpPost]
 		public String DoPost([FromForm] CategoryPostModel model)
 		{
+			var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
+			if (identity == null)
+			{
+				Response.StatusCode = StatusCodes.Status401Unauthorized;
+				return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "";
+			}
+			if(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "Admin")
+			{
+				Response.StatusCode = StatusCodes.Status403Forbidden;
+				return "Access to API forbidden";
+			}
 			try
 			{
 				String? fileName = null;
