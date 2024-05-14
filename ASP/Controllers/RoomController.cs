@@ -1,5 +1,6 @@
 ﻿using ASP.Data.DAL;
 using ASP.Data.Entities;
+using ASP.Middleware;
 using ASP.Models.Content.Location;
 using ASP.Models.Content.Room;
 using Microsoft.AspNetCore.Http;
@@ -98,6 +99,15 @@ namespace ASP.Controllers
         [HttpPost("reserve")]
         public String ReserveRoom([FromBody] ReserveRoomFormModel model)
         {
+            if (!(User.Identity?.IsAuthenticated ?? false))
+            {
+                var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
+                if (identity == null)
+                {
+                    Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "";
+                }
+            }
             try
             {
                 _dataAccessor.ContentDao.ReserveRoom(model);
