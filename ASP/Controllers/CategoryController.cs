@@ -14,15 +14,19 @@ namespace ASP.Controllers
 	public class CategoryController : ControllerBase
 	{
 		private readonly DataAccessor _dataAccessor;
-		public CategoryController(DataAccessor dataAccessor)
-		{
-			_dataAccessor = dataAccessor;
-		}
+		private readonly ILogger<CategoryController> _logger;
+        public CategoryController(DataAccessor dataAccessor, ILogger<CategoryController> logger)
+        {
+            _dataAccessor = dataAccessor;
+            _logger = logger;
+        }
 
-		[HttpGet]
+        [HttpGet]
 		public List<Category> DoGet()
 		{
-			String? userRole = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthSessionMiddleware));
+            identity ??= User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
+            String? userRole = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 			bool isAdmin = "Admin".Equals(userRole);
 			return _dataAccessor.ContentDao.GetCategories(includeDeleted: isAdmin);
 		}
@@ -30,11 +34,12 @@ namespace ASP.Controllers
 		[HttpPost]
 		public String DoPost([FromForm] CategoryPostModel model)
 		{
-			var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
+            var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthSessionMiddleware));
+            identity ??= User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
 			if (identity == null)
 			{
 				Response.StatusCode = StatusCodes.Status401Unauthorized;
-				return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "";
+				return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "Auth Required";
 			}
 			if(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "Admin")
 			{
@@ -70,7 +75,72 @@ namespace ASP.Controllers
 
 		}
 
-		[HttpDelete("{id}")]
+        [HttpPut]
+        public String DoPut ([FromForm] CategoryPostModel model)
+        {
+            var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthSessionMiddleware));
+            identity ??= User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
+            if (identity == null)
+            {
+                Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "Auth Required";
+            }
+            if (identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "Admin")
+            {
+                Response.StatusCode = StatusCodes.Status403Forbidden;
+                return "Access to API forbidden";
+            }
+			if(model.CategoryId == null || model.CategoryId == default(Guid))
+			{
+				Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return "Missing required parameter: 'category-id'";
+            }
+			Category? category = _dataAccessor.ContentDao.GetCategoryById(model.CategoryId.Value);
+            if (category == null)
+			{
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return $"Parameter 'category-id' ({model.CategoryId.Value}) belongs to no entity";
+            }
+			if( !String.IsNullOrEmpty(model.Name)) category.Name = model.Name;
+            if (!String.IsNullOrEmpty(model.Description)) category.Description = model.Description;
+            if (!String.IsNullOrEmpty(model.Slug)) category.Slug = model.Slug;
+			if (model.Photo != null)
+			{
+				try
+				{
+					String? fileName = null;
+					String ext = Path.GetExtension(model.Photo.FileName);
+					String path = Directory.GetCurrentDirectory() + "/wwwroot/img/content/";
+					String pathName;
+					do
+					{
+						fileName = Guid.NewGuid() + ext;
+						pathName = path + fileName;
+					}
+					while (System.IO.File.Exists(pathName));
+					using var stream = System.IO.File.OpenWrite(pathName);
+					model.Photo.CopyTo(stream);
+					if (!String.IsNullOrEmpty(category.PhotoUrl))
+					{
+						try { System.IO.File.Delete(path + category.PhotoUrl); } 
+						catch { _logger.LogWarning(category.PhotoUrl + " not deleted"); }
+					}
+					category.PhotoUrl = fileName;
+				}
+				catch (Exception ex)
+				{
+					_logger.LogWarning(ex.Message);
+					Response.StatusCode = StatusCodes.Status400BadRequest;
+					return "Error uploading file";
+				}
+			}
+			_dataAccessor.ContentDao.UpdateCategory(category);
+			Response.StatusCode = StatusCodes.Status200OK;
+			return "Updated";
+
+        }
+
+        [HttpDelete("{id}")]
 		public String DoDelete(Guid id)
 		{
 			_dataAccessor.ContentDao.DeleteCategory(id);
@@ -114,6 +184,8 @@ namespace ASP.Controllers
 		[FromForm(Name = "category-slug")]
 		public String Slug { get; set; }
 		[FromForm(Name = "category-photo")]
-		public IFormFile? Photo { get; set; } 
-	}
+		public IFormFile? Photo { get; set; }
+        [FromForm(Name = "category-id")]
+        public Guid? CategoryId { get; set; }
+    }
 }

@@ -49,18 +49,33 @@ namespace ASP.Data.DAL
             }
             return ctg;
         }
+        public Category? GetCategoryById(Guid id)
+        {
+            Category? ctg;
+            lock (_dblocker)
+            {
+                ctg = _context.Categories.Find(id);
+            }
+            return ctg;
+        }
         public void UpdateCategory(Category category)
 		{
-			var ctg = _context
-				.Categories
-				.Find(category.Id);
-			if (ctg != null)
+			Category? ctg;
+			lock (_dblocker)
+			{
+				ctg = _context.Categories.Find(category.Id);
+			}
+			if (ctg != null && ctg != category)
 			{
 				ctg.Name = category.Name;
 				ctg.Description = category.Description;
 				ctg.DeleteDt = category.DeleteDt;
-				_context.SaveChanges();
+				ctg.PhotoUrl = category.PhotoUrl;
 			}
+			lock(_dblocker)
+			{
+                _context.SaveChanges();
+            }
 		}
 		public void RestoreCategory(Guid id)
 		{

@@ -25,9 +25,33 @@
         ctgId = formData.get("category-id");
         if (ctgId) {
             console.log("Оновлення категорії " + ctgId);
+            fetch('api/category', {
+                method: 'PUT',
+                body: formData
+            }).then(r => {
+                console.log(r);
+                if (r.status < 300) {
+                    window.location.reload();
+                }
+                else {
+                    r.text().then(alert);
+                }
+            })
         }
         else {
             console.log("Додавання нової категорії");
+            fetch('api/category', {
+                method: 'POST',
+                body: formData
+            }).then(r => {
+                console.log(r);
+                if (r.status == 201) {
+                    window.location.reload();
+                }
+                else {
+                    r.text().then(alert);
+                }
+            })
         }
     }
     // на інші форми ми не вплюваємо
