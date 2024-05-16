@@ -45,7 +45,13 @@ namespace ASP.Data.DAL
 		}
 		public Token? CreateTokenForUser(Guid userId)
 		{
-			Token token = new() { 
+            Token? existingToken = _dataContext.Tokens
+                .FirstOrDefault(t => t.UserId == userId && t.ExpiresDt > DateTime.Now);
+            if (existingToken != null)
+            {
+                return existingToken; // Если активный токен уже существует, возвращаю его
+            }
+            Token token = new() { 
 				Id = Guid.NewGuid(),
 				UserId= userId,
 				SubmitDt = DateTime.Now,
