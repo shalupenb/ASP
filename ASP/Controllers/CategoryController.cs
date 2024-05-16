@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using ASP.Data.Entities;
 using ASP.Data.DAL;
 using ASP.Models;
@@ -11,10 +12,11 @@ namespace ASP.Controllers
 {
 	[Route("api/category")]
 	[ApiController]
-	public class CategoryController : ControllerBase
-	{
+	public class CategoryController : BackendController
+    {
 		private readonly DataAccessor _dataAccessor;
 		private readonly ILogger<CategoryController> _logger;
+
         public CategoryController(DataAccessor dataAccessor, ILogger<CategoryController> logger)
         {
             _dataAccessor = dataAccessor;
@@ -24,29 +26,14 @@ namespace ASP.Controllers
         [HttpGet]
 		public List<Category> DoGet()
 		{
-            var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthSessionMiddleware));
-            identity ??= User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
-            String? userRole = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-			bool isAdmin = "Admin".Equals(userRole);
 			return _dataAccessor.ContentDao.GetCategories(includeDeleted: isAdmin);
 		}
 
 		[HttpPost]
 		public String DoPost([FromForm] CategoryPostModel model)
 		{
-            var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthSessionMiddleware));
-            identity ??= User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
-			if (identity == null)
-			{
-				Response.StatusCode = StatusCodes.Status401Unauthorized;
-				return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "Auth Required";
-			}
-			if(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "Admin")
-			{
-				Response.StatusCode = StatusCodes.Status403Forbidden;
-				return "Access to API forbidden";
-			}
-			try
+            if (getAdminAuthMessage() is String msg) return msg;
+            try
 			{
 				String? fileName = null;
 				if (model.Photo != null)
@@ -78,19 +65,8 @@ namespace ASP.Controllers
         [HttpPut]
         public String DoPut ([FromForm] CategoryPostModel model)
         {
-            var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthSessionMiddleware));
-            identity ??= User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
-            if (identity == null)
-            {
-                Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "Auth Required";
-            }
-            if (identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "Admin")
-            {
-                Response.StatusCode = StatusCodes.Status403Forbidden;
-                return "Access to API forbidden";
-            }
-			if(model.CategoryId == null || model.CategoryId == default(Guid))
+            if (getAdminAuthMessage() is String msg) return msg;
+            if (model.CategoryId == null || model.CategoryId == default(Guid))
 			{
 				Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 return "Missing required parameter: 'category-id'";
@@ -143,7 +119,8 @@ namespace ASP.Controllers
         [HttpDelete("{id}")]
 		public String DoDelete(Guid id)
 		{
-			_dataAccessor.ContentDao.DeleteCategory(id);
+            if (getAdminAuthMessage() is String msg) return msg;
+            _dataAccessor.ContentDao.DeleteCategory(id);
 			Response.StatusCode = StatusCodes.Status202Accepted;
 			return "Ok";
 		}
@@ -174,7 +151,7 @@ namespace ASP.Controllers
 			Response.StatusCode = StatusCodes.Status202Accepted;
 			return "RESTORE Ok for id = " + id;
 		}
-	}
+    }
 	public class CategoryPostModel
 	{
 		[FromForm(Name = "category-name")]
