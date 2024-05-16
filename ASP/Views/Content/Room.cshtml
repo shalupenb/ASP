@@ -48,8 +48,23 @@
             int allDays = 0;
             String itemClass;
             String authClass = isAuthenticated ? "item-auth" : "";
+            DateTime firstDayOfMonth = new DateTime(Model.Year, Model.Month, 1);
+            int startDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
+            DateTime lastDayOfMonth = new DateTime(Model.Year, Model.Month, DateTime.DaysInMonth(Model.Year, Model.Month));
+            int endDayOfWeek = (int)lastDayOfMonth.DayOfWeek;
         }
         <div class="calendar">
+            <div class="calendar-item item-past"><b>Mo</b></div>
+            <div class="calendar-item item-past"><b>Tu</b></div>
+            <div class="calendar-item item-past"><b>We</b></div>
+            <div class="calendar-item item-past"><b>Th</b></div>
+            <div class="calendar-item item-past"><b>Fr</b></div>
+            <div class="calendar-item item-past"><b>Sa</b></div>
+            <div class="calendar-item item-past"><b>Su</b></div>
+            @for (int i = 1; i < startDayOfWeek; ++i)
+            {
+                <div class="calendar-item"></div>
+            }
             @for (int i = 1; i <= DateTime.DaysInMonth(Model.Year, Model.Month); ++i)
             {
                 DateTime date = new DateTime(Model.Year, Model.Month, i);
@@ -65,20 +80,20 @@
                     @if (isReserved && isOwn)
                     {
                         <b data-type="drop-reserve-room" 
-                                data-reserve-id="@(reservation!.Id)"
-                                title="Скасувати замовлення">
+                            data-reserve-id="@(reservation!.Id)"
+                            title="Скасувати замовлення">
                             @i
                         </b>
                     }
                     else if (!isReserved && isAuthenticated)
                     {
                         <b data-user-id="@(userId)"
-                                data-room-name="@(Model.Room.Name)"
-                                data-room-id="@(Model.Room.Id)"
-                                data-room-price="@(Model.Room.DailyPrice)"
-                                data-date="@Model.Year-@(Model.Month.ToString("D2"))-@(i.ToString("00"))"
-                                data-type="reserve-room"
-                                title="Замовити">
+                            data-room-name="@(Model.Room.Name)"
+                            data-room-id="@(Model.Room.Id)"
+                            data-room-price="@(Model.Room.DailyPrice)"
+                            data-date="@Model.Year-@(Model.Month.ToString("D2"))-@(i.ToString("00"))"
+                            data-type="reserve-room"
+                            title="Замовити">
                             @i
                         </b>
                     }
@@ -88,7 +103,7 @@
                     }
                 </div>
             }
-            @for(int i = allDays % 7; i < 7; ++i)
+            @for (int i = endDayOfWeek; i < 7; ++i)
             {
                 <div class="calendar-item"></div>  
             }
