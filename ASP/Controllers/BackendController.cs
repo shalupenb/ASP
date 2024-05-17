@@ -9,6 +9,7 @@ namespace ASP.Controllers
     {
         protected bool isAuthenticated;
         protected bool isAdmin;
+        protected IEnumerable<Claim>? claims;
 
         [NonAction]
         public void OnActionExecuting(ActionExecutingContext context)
@@ -18,6 +19,7 @@ namespace ASP.Controllers
             this.isAuthenticated = identity != null;
             String? userRole = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             this.isAdmin = "Admin".Equals(userRole);
+            claims = identity?.Claims;
         }
         protected String? getAdminAuthMessage()
         {

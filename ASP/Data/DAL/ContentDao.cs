@@ -252,6 +252,15 @@ namespace ASP.Data.DAL
                 _context.SaveChanges();
             }
 		}
+		public Reservation? GetReservation(Guid roomId, DateTime date)
+		{
+			Reservation? reservation;
+			lock(_dblocker)
+			{
+				reservation = _context.Reservations.FirstOrDefault(r => r.RoomId == roomId && r.Date.Date == date.Date && r.DeletedDt == null);
+			}
+			return reservation;
+		}
 
         public void DeleteReservation(Guid id)
 		{

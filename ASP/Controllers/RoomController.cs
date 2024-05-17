@@ -103,14 +103,21 @@ namespace ASP.Controllers
         [HttpPost("reserve")]
         public String ReserveRoom([FromBody] ReserveRoomFormModel model)
         {
-            if (!(User.Identity?.IsAuthenticated ?? false))
+            if (! base.isAuthenticated)
             {
-                var identity = User.Identities.FirstOrDefault(i => i.AuthenticationType == nameof(AuthTokenMiddleware));
-                if (identity == null)
-                {
-                    Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return HttpContext.Items[nameof(AuthTokenMiddleware)]?.ToString() ?? "";
-                }
+                Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return "Authorization failed";
+            }
+            Reservation? reservation = _dataAccessor.ContentDao.GetReservation(model.RoomId, model.Date);
+            if(base.claims?.First(c => c.Type == ClaimTypes.Sid)?.Value != model.UserId.ToString())
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return "Ambiguous user identification";
+            }
+            if (reservation != null)
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return "Room is reserved for requested date";
             }
             try
             {
