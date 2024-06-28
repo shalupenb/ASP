@@ -69,10 +69,6 @@ namespace ASP.Controllers
 		{
 			return View();
 		}
-		public IActionResult Intro()
-		{
-			return View();
-		}
 		public IActionResult AboutRazor()
 		{
 			Models.Home.AboutRazor.AboutRazorPageModel aboutRazorModel = new()
@@ -113,108 +109,6 @@ namespace ASP.Controllers
 			_logger.LogInformation(output.Message);
 			return Json(output);
 		}
-
-		public IActionResult Data()
-		{
-			Models.Home.Data.DataPageModel dataPageModel = new()
-			{
-				TabHeader = "Робота з БД",
-				PageTitle = "Робота з даними. Пiдключення БД",
-				NuGetPackages = new List<String>
-				{
-					"Microsoft.EntityFrameworkCore - ядро фреймворку, основні засоби",
-					"Microsoft. EntityFrameworkCore.Tools - інструменти управління міграціями",
-					"Драйвер БД: у залежності від СУБД -\r\n\t\tдля MSSQL: " +
-					"Microsoft.EntityFrameworkCore.SqlServer\r\n\t\tMySQL: Pomelo.EntityFrameworkCore.MySql"
-				},
-				DataStruct = new List<String> 
-				{
-					"Створюємо в корені проєкту папку Data, у ній - клас DataContext",
-					"Реалізуємо рядок підключення до БД. MSSQL може створювати БД,\r\n\t\tвідповідно можна створити рядок до поки що неіснуючої БД.\r\n\t\tMySQL - краще створити БД, але залишити порожньою. Рядки підключення\r\n\t\tвміщують до appsettings.json у спеціальну секцію \"ConnectionStrings\"",
-					"Створюємо папку Data/Entities, у ній клас - User",
-					"Клас DataContext успадковується від класу DbContext. У класі DataContext потрібно перевизначити методи \r\n\t\tOnConfiguring() і OnModelCreating(), а його конструкторі необхідно передати DbContextOptions через base(options).",
-					"У файлі Program.cs необхідно додати контекст даних за допомогою builder.Services.AddDbContext<DataContext>\r\n\t\t\t\t\t(options =>\r\n\t\t\t\t\toptions.UseSqlServer(\r\n\t\t\t\t\tbuilder.Configuration.GetConnectionString(\"LocalMSSQL\")));",
-					"Потім можна використовувати команду add-migration 'название миграции' у терміналі для створення міграції.",
-					"Після створення міграції її можна застосувати до бази даних за допомогою команди update-database."
-				}
-			};
-			ViewData["users-count"] = _dataContext.Users.Count();
-			return View(dataPageModel);
-		}
-		public IActionResult Ioc(String? format)  // Inversion of Control
-		{
-			// користуємось інжектованим сервісом
-			// ViewData["hash"] = 
-			// ViewData - спеціальний об'єкт для передачі даних
-			// до представлення. Його ключі на кшталт ["hash"]
-			// можна створювати з довільними назвами
-			IocPageModel pageModel = new()
-			{
-				TabHeader = "IoC",
-				PageTitle = "Інверсiя управління. Сервіси. ",
-				SingleHash = _hashService.Digest("123"),
-				IoCIs = "IoC (Inversion of Control, Інверсія управління) - архітектурний шаблон," +
-				"\r\n\tзгідно з яким задачі управління життєвим циклом об'єктів перекладаються" +
-				"\r\n\tна спеціальний модуль (інжектор, контейнер залежностей, провайдер)." +
-				"\r\n\tЖиттєвий цикл об'єкта: CRUD. Практично це означає, що замість операторів" +
-				"\r\n\tnew / delete будуть відповідні звернення до контейнеру.",
-				IoCOptions = new List<String>
-				{
-					"Створення сервісу - класу, що надає необхідну функціональність. ",
-					"Реєстрація всіх сервісів у контейнері (інжекторі)",
-					"Інжекція сервісів у інші об'єкти, яким вони потрібні"
-				},
-				HashExm = new List<String>
-				{
-					"(одноразово) Створюємо папку Services у корені проєкту. ",
-					"Оскільки сервіс - це щонайменше два файли (клас та інтерфейс),\r\n\t\tдля кожного сервісу також створюються папки (Hash)",
-					"Створюємо інтерфейс IHashService та клас Md5HashService ",
-					"Pеєструємо сервіс (див. Program.cs, рядок 8 і далі)",
-					"Інжектуємо сервіс (див. HomeController)",
-					$"Перевіряємо його роботу: {_hashService.Digest("123")}",
-					"Iмітуємо задачу: необхідно перейти на інший геш-алгоритм SHA",
-					"OCP (3 SOLID) \"доповнюй, але не змінюй\" -- створюємо новий\r\n\t\tклас ShaHashService у папці Services/Hash"
-				},
-				Title = "Декілька випадкових дайджестів:",
-			};
-			for (int i = 0; i < 5; i++)
-			{
-				String str = (i + 100500).ToString();
-				pageModel.Hashes[str] = _hashService.Digest(str);
-			}
-			if (format == "json")
-				return Json(pageModel);
-			return View(pageModel);
-		}
-		public IActionResult URLStruct()
-		{
-			Models.Home.URLStruct.URLStructPageModel uRLStructPage = new()
-			{
-				TabHeader = "URL",
-				PageTitle = "Структура URL",
-				PageText = new List<String>
-				{
-                    "Протокол: This is the designation of the protocol that is used to access the resource. \r\n        For example, http://, https://, ftp://, mailto:, etc..",
-                    "Домен: This is the part of the URL that indicates the address of the server on which the resource is hosted. \r\n        For example, www.example.com.",
-                    "Путь: This points to a specific path to a resource on the server. This is the part of the URL after the domain. \r\n        For example, /path/to/resource.",
-                    "Строка запроса: These are the parameters passed in the URL for a request to a resource. \r\n        They begin with a question symbol ? and can contain key-value pairs separated by the ampersand & character. For example, ?key1=value1&key2=value2.",
-                    "Фрагмент: This is a specific part of the resource that you need to go to or scroll to after the page has loaded. \r\n        The fragment begins with a hash symbol #. For example, #section1."
-                },
-                PageImageSrc = "/img/url.jpg"
-            };
-			return View(uRLStructPage);
-		}
-
-        public IActionResult Privacy()
-        {
-            Models.Home.Privacy.PrivacyPageModel privacyPage = new()
-            {
-                TabHeader = "Privacy",
-                PageTitle = "Privacy Policy",
-                PageText = "Use this page to detail your site's privacy policy."
-            };
-            return View(privacyPage);
-        }
         public IActionResult Signup(SingupFormModel? formModel)
         {
 			SingupPageModel pageModel = new()

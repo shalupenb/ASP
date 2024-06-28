@@ -37,6 +37,10 @@ body {
     flex: 1;
 }
 
+.logo{
+    width: 95px;
+}
+
 .user_logo {
     width: 40px;
     height: 40px;

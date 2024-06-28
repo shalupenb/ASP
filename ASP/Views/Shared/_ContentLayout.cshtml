@@ -16,7 +16,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - ASP</title>
+	<title>Airbnb</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/ASP.styles.css" asp-append-version="true" />
@@ -26,45 +26,13 @@
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ASP</a>
+				<a class="navbar-brand" style="color: #FF5A60;" asp-area="" asp-controller="Home" asp-action="Index"><img class="logo" src="/img/logo.png" alt="logo"></img></a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1">
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Домашняя страница"
-							   asp-controller="Home" asp-action="Index"><i class="bi bi-house-door"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Вступ"
-							   asp-controller="Home" asp-action="Intro"><i class="bi bi-play-circle"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Структура URL"
-							   asp-controller="Home" asp-action="URLStruct"><i class="bi bi-diagram-2"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Політика безпеки"
-							   asp-controller="Home" asp-action="Privacy"><i class="bi bi-shield-check"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Інверся управління. Сервіси."
-							   asp-controller="Home" asp-action="Ioc"><i class="bi bi-arrow-repeat"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="СиHтакCиc Razor"
-							   asp-controller="Home" asp-action="AboutRazor"><i class="bi bi-at"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Робота з даними"
-							   asp-controller="Home" asp-action="Data"><i class="bi bi-database"></i></a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" title="Мoделі в ASP"
-							   asp-controller="Home" asp-action="Model"><i class="bi bi-clipboard-data"></i></a>
-						</li>
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" title="Адміністрування контенту"
 							   asp-controller="Home" asp-action="Admin"><i class="bi bi-pencil-square"></i></a>
@@ -78,13 +46,13 @@
 							<i data-bs-toggle="modal" data-bs-target="#emailModal" style="color: red; padding-left: 10px; cursor: pointer" class="bi bi-envelope-dash" title="Ваша пошта не підтверджена"></i>
 						}
 						<a class="nav-link text-dark" asp-area="" title="Вихiд"
-						   asp-controller="Home" asp-route-logout="true" asp-action="Index"><i class="bi bi-box-arrow-right"></i></a>
+						   asp-controller="Content" asp-route-logout="true" asp-action="Index"><i class="bi bi-box-arrow-right"></i></a>
 					}
 					else
 					{
 						<a class="nav-link text-dark" asp-area="" title="Реєстрація"
 						   asp-controller="Home" asp-action="Signup"><i class="bi bi-person-plus"></i></a>
-						<button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+						<button type="button" class="btn btn-outline-danger rounded-circle" data-bs-toggle="modal"
 								data-bs-target="#authModal">
 							<i class="bi bi-person-check-fill"></i>
 						</button>
