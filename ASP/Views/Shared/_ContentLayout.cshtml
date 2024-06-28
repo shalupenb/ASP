@@ -39,7 +39,7 @@
 						<img class="user_logo" src="/img/avatars/@(avatar == "" ? "no-avatar.png" : avatar)" alt="avatar" />
 						if (!isEmailConfirmed)
 						{
-							<i data-bs-toggle="modal" data-bs-target="#emailModal" style="color: red; padding-left: 10px; cursor: pointer" class="bi bi-envelope-dash" title="Ваша пошта не підтверджена"></i>
+							<i data-bs-toggle="modal" data-bs-target="#emailModal" style="color: red; padding-left: 10px; cursor: pointer; border-radius: 50%;" class="bi bi-envelope-dash" title="Ваша пошта не підтверджена"></i>
 						}
 						<a class="nav-link text-dark" asp-area="" title="Вихiд"
 						   asp-controller="Content" asp-route-logout="true" asp-action="Index"><i class="bi bi-box-arrow-right"></i></a>

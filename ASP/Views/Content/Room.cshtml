@@ -16,7 +16,7 @@
     </div>
     <div class="col col-4">
         <form>
-            <b>Бронювання кімнати на</b> <select class="form-select" name="month">
+            <b>Вибрати місяць та рік бронювання</b><select class="form-select" name="month">
             @for(int i = 1; i <= 12; ++i)
             {
                 if(i == Model.Month)
@@ -28,7 +28,7 @@
                     <option value="@i">@(i.ToString("D2"))</option>
                 }
             }
-            </select> <b>місяц</b> <select class="form-select" name="year">
+            </select><select class="form-select" name="year">
                 @for (int i = DateTime.Today.Year; i <= DateTime.Today.Year + 1; ++i)
             {
                 if (i == Model.Year)
@@ -40,7 +40,7 @@
                     <option value="@i">@i</option>
                 }
             }
-            </select> <b>року</b> <button class="btn btn-danger">Оновити</button>
+            </select><button class="btn btn-danger">Оновити</button>
         </form>
         <br/>
         @{
