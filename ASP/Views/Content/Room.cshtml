@@ -11,12 +11,12 @@
 <div class="row">
     <div class="col col-8">
         <h1>Кiмната: @Model.Room.Name</h1>
-        <img src="~/img/content/@(Model.Room.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="...">
+        <img src="~/img/content/@(Model.Room.PhotoUrl ?? "no-image.jpg")" class="card-img-top" style="border-radius: 20px;" alt="...">
         <p>@Model.Room.Description</p>
     </div>
     <div class="col col-4">
         <form>
-        Бронювання кімнати на <select name="month">
+            <b>Бронювання кімнати на</b> <select class="form-select" name="month">
             @for(int i = 1; i <= 12; ++i)
             {
                 if(i == Model.Month)
@@ -28,7 +28,7 @@
                     <option value="@i">@(i.ToString("D2"))</option>
                 }
             }
-            </select> місяц <select name="year">
+            </select> <b>місяц</b> <select class="form-select" name="year">
                 @for (int i = DateTime.Today.Year; i <= DateTime.Today.Year + 1; ++i)
             {
                 if (i == Model.Year)
@@ -40,7 +40,7 @@
                     <option value="@i">@i</option>
                 }
             }
-        </select> року <button>Оновити</button>
+            </select> <b>року</b> <button class="btn btn-danger">Оновити</button>
         </form>
         <br/>
         @{

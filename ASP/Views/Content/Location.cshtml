@@ -9,11 +9,15 @@
     .Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.UserData)
     != null
     : false;
+    String role = isAuthenticated
+    ? Context.User.Claims.First(claim => claim.Type == ClaimTypes.Role).Value
+    : "";
+    ViewData["role"] = role;
 }
 
-<h1>Location: @Model.Location.Name</h1>
+<h2> @Model.Location.Name</h2>
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="row row-cols-1 row-cols-md-4 g-4">
     @foreach (var room in Model.Rooms)
     {
         @Html.DisplayFor(m => room, "RoomTemplate")
@@ -21,7 +25,7 @@
 </div>
 
 
-@if (isAdmin)
+@if ("Admin".Equals(role))
 {
     <hr />
     <form id="room-form" method="post" enctype="multipart/form-data">

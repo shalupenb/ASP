@@ -5,9 +5,9 @@
 }
 
 <div class="col">
-	<div class="card h-100" style="width: 18rem; @filter">
+	<div class="card h-100" style="width: 18rem; border: 0; @filter">
 		<a asp-action="Category" asp-route-id="@(Model.Slug)">
-			<img src="~/img/content/@(Model.PhotoUrl ?? "no-image.jpg")" class="card-img-top" alt="...">
+			<img src="~/img/content/@(Model.PhotoUrl ?? "no-image.jpg")" class="card-img-top" style="border-radius: 20px; width: 300px; height: 300px; object-fit: cover;" alt="...">
 			<div class="card-body">
 				@if(isDeleted)
 				{
